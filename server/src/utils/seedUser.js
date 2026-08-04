@@ -8,7 +8,7 @@ async function seed() {
   const [,, login, password, name] = process.argv;
 
   if (!login || !password) {
-    console.log('Використання: node src/utils/seedUser.js <login> <password> [name]');
+    console.log('do next: node src/utils/seedUser.js <login> <password> [name]');
     process.exit(1);
   }
 
