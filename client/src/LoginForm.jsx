@@ -70,7 +70,7 @@ export default function LoginForm({ onLoginSuccess }) {
 
 const styles = {
     container: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f5f5f5' },
-    card: { background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', width: '320px' },
+    card: { background: '#fff', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' },
     field: { marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' },
     input: { padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' },
     button: { width: '100%', padding: '0.7rem', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' },
