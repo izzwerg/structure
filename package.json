@@ -1,0 +1,28 @@
+{
+  "name": "structure",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db": "docker compose up -d",
+  "server": "cd server && npm run dev",
+  "client": "cd client && npm run dev",
+  "start": "concurrently \"npm run db\" \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/izzwerg/structure.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/izzwerg/structure/issues"
+  },
+  "homepage": "https://github.com/izzwerg/structure#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
+}
