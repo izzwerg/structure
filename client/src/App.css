@@ -192,3 +192,7 @@
   width: 100%;
   height: 100vh;
 }
+
+.pointer {
+  cursor: pointer;
+}
