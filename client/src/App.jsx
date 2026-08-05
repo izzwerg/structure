@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import LoginForm from './LoginForm';
+import Left from './Left/Left.jsx'
+import Right from './Right/Right.jsx'
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [navState, setNavState] = useState(false)
+  const [page, setPage] = useState('tree')
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -26,14 +31,17 @@ export default function App() {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Вітаємо, {user.name}!</h1>
-        <button onClick={handleLogout}>Вийти</button>
-      </header>
-      <main>
-        <p>Ви авторизовані. Тут буде основний функціонал (список людей, створення картки, генерація PDF).</p>
-      </main>
-    </div>
+    <>
+      <div className='app_container'>
+        <Left
+          isNavOpen={navState}
+          setIsNavOpen={setNavState}
+          page={page}
+          setPage={setPage}
+          handleLogout={handleLogout}
+        />
+        <Right page={page} />
+      </div>
+    </>
   );
 }

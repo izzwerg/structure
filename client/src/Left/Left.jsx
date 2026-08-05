@@ -1,0 +1,35 @@
+import './Left.css'
+import clsx from 'clsx';
+
+
+function Left({ isNavOpen, setIsNavOpen, page, setPage, handleLogout }) {
+
+    function handleNavClick() {
+        setIsNavOpen(!isNavOpen);
+    }
+
+    return (
+        <div className={clsx('left_container', { 'nav_open': isNavOpen, 'nav_closed': !isNavOpen })}>
+            <div className='nav_switcher pointer'
+                onClick={() => handleNavClick()}
+            >
+                <img src="menu.svg" alt="menu" className={clsx('switcher_logo', { 'nav_open': isNavOpen, 'nav_closed': !isNavOpen })} />
+            </div>
+            <div className={clsx('nav_btn pointer', { 'active': page === 'tree' })} onClick={() => setPage('tree')}>
+                <img src="tree.svg" alt="tree" className='nav_btn_logo' />
+                <span className='nav_btn_text'>TREE</span>
+            </div>
+            <div className={clsx('nav_btn pointer', { 'active': page === 'table' })} onClick={() => setPage('table')}>
+                <img src="table.svg" alt="table" className='nav_btn_logo' />
+                <span className='nav_btn_text'>TABLE</span>
+            </div>
+            <div className={clsx('nav_btn pointer', { 'active': page === 'person' })} onClick={() => setPage('person')}>
+                <img src="person.svg" alt="person" className='nav_btn_logo' />
+                <span className='nav_btn_text'>PERSON</span>
+            </div>
+            <button onClick={handleLogout}>Вийти</button>
+        </div>
+    )
+}
+
+export default Left
