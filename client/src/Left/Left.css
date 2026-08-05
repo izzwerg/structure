@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     width: 400px;
-    height: 100vh;
+    /* height: 100vh; */
     background-color: rgb(163, 163, 133);
     gap: 8px;
     padding: 8px;

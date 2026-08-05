@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import LoginForm from './LoginForm';
 import Left from './Left/Left.jsx'
 import Right from './Right/Right.jsx'
+import './App.css'
 
 export default function App() {
   const [user, setUser] = useState(null);
