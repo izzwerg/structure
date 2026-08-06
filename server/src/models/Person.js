@@ -21,6 +21,10 @@ const personSchema = new mongoose.Schema({
         default: 'none',
         trim: true,
     },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
     extraData: {
         type: Map,
         of: mongoose.Schema.Types.Mixed,

@@ -3,7 +3,6 @@ const router = express.Router();
 const Property = require('../models/Property');
 const authMiddleware = require('../middleware/auth');
 
-// Захищаємо всі роути авторизацією
 router.use(authMiddleware);
 
 // Отримати всі active-властивості (посортовані за `order`)

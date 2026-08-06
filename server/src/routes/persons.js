@@ -5,10 +5,11 @@ const authMiddleware = require('../middleware/auth');
 
 router.use(authMiddleware);
 
-// Отримати список усіх людей
+// GET /api/persons — отримати список людей (з можливістю виводу архівних через query-параметр)
 router.get('/', async (req, res) => {
     try {
-        const persons = await Person.find().sort({ lastName: 1, firstName: 1 });
+        const filter = req.query.includeInactive === 'true' ? {} : { isActive: true };
+        const persons = await Person.find(filter).sort({ lastName: 1, firstName: 1 });
         res.json(persons);
     } catch (err) {
         res.status(500).json({ message: 'Помилка завантаження списку' });
