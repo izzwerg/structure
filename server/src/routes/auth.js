@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
@@ -45,13 +44,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/auth/logout
 router.post('/logout', (req, res) => {
   res.clearCookie('token');
   res.json({ message: 'Успішний вихід' });
 });
 
-// GET /api/auth/me (перевірка поточного сеансу при перезавантаженні сторінки)
 router.get('/me', authMiddleware, (req, res) => {
   res.json({ user: req.user });
 });

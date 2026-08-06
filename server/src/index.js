@@ -12,12 +12,10 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// Підключення до БД
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Маршрути API
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/persons', personRoutes);
