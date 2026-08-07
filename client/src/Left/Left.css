@@ -10,10 +10,11 @@
     justify-content: space-between;
 
     &.nav_closed {
-        width: 48px;
+        width: 64px;
 
         .nav_btn_text {
             display: none;
+            visibility: hidden;
         }
     }
 
@@ -46,6 +47,8 @@
     border-radius: 4px;
     background-color: olive;
     transition: all 0.3s ease;
+    height: 40px;
+    max-height: 40px;
 
     &:hover {
         background-color: #525200;
