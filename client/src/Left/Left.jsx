@@ -28,6 +28,11 @@ function Left({ isNavOpen, setIsNavOpen, page, setPage, handleLogout }) {
                     <img src="person.svg" alt="person" className='nav_btn_logo' />
                     <span className='nav_btn_text'>PERSON</span>
                 </div>
+                <div className={clsx('nav_btn pointer', { 'active': page === 'person_model' })} onClick={() => setPage('person_model')}>
+                    <img src="person.svg" alt="person" className='nav_btn_logo' />
+                    <span className='nav_btn_text'>PERSON MODE
+                        L</span>
+                </div>
             </div>
             <button onClick={handleLogout} className='logout_btn pointer'>
                 <img src="mono-logout.svg" alt="person" className='nav_btn_logo' />
