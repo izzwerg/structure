@@ -16,6 +16,13 @@ const personSchema = new mongoose.Schema({
         default: '',
         trim: true,
     },
+    gender: {
+        type: String,
+        required: true,
+        enum: ['M', 'F'],
+        default: 'M',
+        trim: true,
+    },
     treeNodeId: {
         type: String,
         default: 'none',

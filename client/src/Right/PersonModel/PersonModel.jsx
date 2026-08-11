@@ -31,7 +31,10 @@ export default function PersonModel() {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false)
+        handleCancel()
+    };
 
     // Завантаження списку властивостей
     const fetchProperties = async () => {
@@ -73,6 +76,7 @@ export default function PersonModel() {
             order: prop.order || 0,
             is_active: prop.is_active,
         });
+        setOpen(true)
     };
 
     // Скидання формы
@@ -80,6 +84,7 @@ export default function PersonModel() {
         setEditingId(null);
         setFormData(INITIAL_FORM_STATE);
         setError('');
+        setOpen(false);
     };
 
     // Збереження (Створення або Оновлення)
@@ -135,110 +140,11 @@ export default function PersonModel() {
 
             <div className="model_workspace">
                 {/* Форма створення/редагування */}
-                <form onSubmit={handleSubmit} className="property_form">
-                    <h3>{editingId ? 'Редагувати властивість' : 'Створити нову властивість'}</h3>
 
-                    <div className="form_group">
-                        <label>Назва для відображення:</label>
-                        <input
-                            type="text"
-                            name="property_name"
-                            value={formData.property_name}
-                            onChange={handleChange}
-                            placeholder="наприклад, ІНН"
-                            required
-                        />
-                    </div>
-
-                    <div className="form_group">
-                        <label>Унікальний ID (property_id):</label>
-                        <input
-                            type="text"
-                            name="property_id"
-                            value={formData.property_id}
-                            onChange={handleChange}
-                            placeholder="наприклад, inn"
-                            disabled={!!editingId} // ID краще блокувати при редагуванні
-                            required
-                        />
-                    </div>
-
-                    <div className="form_group">
-                        <label>Тип поля:</label>
-                        <select
-                            name="property_type"
-                            value={formData.property_type}
-                            onChange={handleChange}
-                        >
-                            {PROPERTY_TYPES.map((t) => (
-                                <option key={t.value} value={t.value}>
-                                    {t.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {formData.property_type === 'select' && (
-                        <div className="form_group">
-                            <label>Варіанти (через кому):</label>
-                            <input
-                                type="text"
-                                name="optionsString"
-                                value={formData.optionsString}
-                                onChange={handleChange}
-                                placeholder="I+, II+, III+, IV+"
-                                required
-                            />
-                        </div>
-                    )}
-
-                    <div className="form_group">
-                        <label>Категорія:</label>
-                        <input
-                            type="text"
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className="form_group">
-                        <label>Порядок сортування (order):</label>
-                        <input
-                            type="number"
-                            name="order"
-                            value={formData.order}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className="form_group checkbox_group">
-                        <label>
-                            <input
-                                type="checkbox"
-                                name="is_active"
-                                checked={formData.is_active}
-                                onChange={handleChange}
-                            />
-                            Активна властивість
-                        </label>
-                    </div>
-
-                    <div className="form_actions">
-                        <button type="submit" className="btn_primary">
-                            {editingId ? 'Оновити' : 'Створити'}
-                        </button>
-                        {editingId && (
-                            <button type="button" onClick={handleCancel} className="btn_secondary">
-                                Скасувати
-                            </button>
-                        )}
-                    </div>
-                </form>
 
                 {/* Таблиця/список існуючих властивостей */}
                 <button onClick={handleOpen} className="btn_primary">
-                    Відкрити модальне вікно
+                    Додати
                 </button>
                 <div className="properties_list">
                     <h3>Існуючі властивості ({properties.length})</h3>
@@ -283,8 +189,106 @@ export default function PersonModel() {
                 onClose={handleClose}
             >
                 <div className="modal_content">
-                    <h2>Modal Title</h2>
-                    <p>Modal content goes here.</p>
+                    <form onSubmit={handleSubmit} className="property_form">
+                        <h3>{editingId ? 'Редагувати властивість' : 'Створити нову властивість'}</h3>
+
+                        <div className="form_group">
+                            <label>Назва для відображення:</label>
+                            <input
+                                type="text"
+                                name="property_name"
+                                value={formData.property_name}
+                                onChange={handleChange}
+                                placeholder="наприклад, ІНН"
+                                required
+                            />
+                        </div>
+
+                        <div className="form_group">
+                            <label>Унікальний ID (property_id):</label>
+                            <input
+                                type="text"
+                                name="property_id"
+                                value={formData.property_id}
+                                onChange={handleChange}
+                                placeholder="наприклад, inn"
+                                disabled={!!editingId} // ID краще блокувати при редагуванні
+                                required
+                            />
+                        </div>
+
+                        <div className="form_group">
+                            <label>Тип поля:</label>
+                            <select
+                                name="property_type"
+                                value={formData.property_type}
+                                onChange={handleChange}
+                            >
+                                {PROPERTY_TYPES.map((t) => (
+                                    <option key={t.value} value={t.value}>
+                                        {t.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {formData.property_type === 'select' && (
+                            <div className="form_group">
+                                <label>Варіанти (через кому):</label>
+                                <input
+                                    type="text"
+                                    name="optionsString"
+                                    value={formData.optionsString}
+                                    onChange={handleChange}
+                                    placeholder="I+, II+, III+, IV+"
+                                    required
+                                />
+                            </div>
+                        )}
+
+                        <div className="form_group">
+                            <label>Категорія:</label>
+                            <input
+                                type="text"
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="form_group">
+                            <label>Порядок сортування (order):</label>
+                            <input
+                                type="number"
+                                name="order"
+                                value={formData.order}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="form_group checkbox_group">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    checked={formData.is_active}
+                                    onChange={handleChange}
+                                />
+                                Активна властивість
+                            </label>
+                        </div>
+
+                        <div className="form_actions">
+                            <button type="submit" className="btn_primary">
+                                {editingId ? 'Оновити' : 'Створити'}
+                            </button>
+                            {editingId && (
+                                <button type="button" onClick={handleCancel} className="btn_secondary">
+                                    Скасувати
+                                </button>
+                            )}
+                        </div>
+                    </form>
                 </div>
             </Modal>
         </div>
