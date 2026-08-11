@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './PersonModel.css';
+import Modal from '@mui/material/Modal';
 
 const PROPERTY_TYPES = [
     { value: 'text', label: 'Текст (однорядковий)' },
@@ -27,6 +28,10 @@ export default function PersonModel() {
 
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     // Завантаження списку властивостей
     const fetchProperties = async () => {
@@ -232,6 +237,9 @@ export default function PersonModel() {
                 </form>
 
                 {/* Таблиця/список існуючих властивостей */}
+                <button onClick={handleOpen} className="btn_primary">
+                    Відкрити модальне вікно
+                </button>
                 <div className="properties_list">
                     <h3>Існуючі властивості ({properties.length})</h3>
                     {properties.length === 0 ? (
@@ -270,6 +278,15 @@ export default function PersonModel() {
                     )}
                 </div>
             </div>
+            <Modal
+                open={open}
+                onClose={handleClose}
+            >
+                <div className="modal_content">
+                    <h2>Modal Title</h2>
+                    <p>Modal content goes here.</p>
+                </div>
+            </Modal>
         </div>
     );
 }
