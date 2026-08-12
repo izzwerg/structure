@@ -36,6 +36,32 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET /api/persons/archived — отримати заархівовані картки
+router.get('/archived', async (req, res) => {
+    try {
+        const persons = await Person.aggregate([
+            { $match: { isActive: false } },
+            {
+                $addFields: {
+                    numericTreeNodeId: {
+                        $cond: {
+                            if: { $eq: ['$treeNodeId', 'none'] },
+                            then: Number.MAX_SAFE_INTEGER,
+                            else: { $toInt: '$treeNodeId' }
+                        }
+                    }
+                }
+            },
+            { $sort: { numericTreeNodeId: 1, lastName: 1, firstName: 1 } },
+            { $project: { numericTreeNodeId: 0 } }
+        ]);
+
+        res.json(persons);
+    } catch (err) {
+        res.status(500).json({ message: 'Помилка завантаження архіву' });
+    }
+});
+
 // Отримати конкретну картку
 router.get('/:id', async (req, res) => {
     try {
@@ -60,10 +86,67 @@ router.post('/', async (req, res) => {
 // Оновити картку
 router.put('/:id', async (req, res) => {
     try {
-        const person = await Person.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updateData = { ...req.body };
+
+        // Якщо картку деактивують, автоматично скидаємо treeNodeId
+        if (updateData.isActive === false) {
+            updateData.treeNodeId = 'none';
+        }
+
+        const person = await Person.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { returnDocument: 'after' }
+        );
+
+        if (!person) {
+            return res.status(404).json({ message: 'Картку не знайдено' });
+        }
+
         res.json(person);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+});
+
+// DELETE /api/persons/:id — м'яке видалення (isActive: false)
+router.delete('/:id', async (req, res) => {
+    try {
+        const person = await Person.findByIdAndUpdate(
+            req.params.id,
+            {
+                isActive: false,
+                treeNodeId: 'none' // Автоматично скидаємо прив'язку до дерева
+            },
+            { returnDocument: 'after' }
+        );
+
+        if (!person) {
+            return res.status(404).json({ message: 'Картку не знайдено' });
+        }
+
+        res.json({ message: 'Картку перенесено в архів', person });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// PATCH /api/persons/:id/restore — відновити картку (isActive: true)
+router.patch('/:id/restore', async (req, res) => {
+    try {
+        const person = await Person.findByIdAndUpdate(
+            req.params.id,
+            { isActive: true },
+            { returnDocument: 'after' }
+        );
+
+        if (!person) {
+            return res.status(404).json({ message: 'Картку не знайдено' });
+        }
+
+        res.json({ message: 'Картку відновлено', person });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 

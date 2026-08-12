@@ -16,9 +16,14 @@ export default function Person() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Модалка створення/редагування
     const [open, setOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState(INITIAL_PERSON_STATE);
+
+    // Модалка підтвердження видалення
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [personToDelete, setPersonToDelete] = useState(null);
 
     const fetchData = async () => {
         try {
@@ -48,6 +53,7 @@ export default function Person() {
         fetchData();
     }, []);
 
+    // Хендлери для створення/редагування
     const handleOpenCreate = () => {
         setEditingId(null);
         setFormData(INITIAL_PERSON_STATE);
@@ -71,6 +77,37 @@ export default function Person() {
         setEditingId(null);
         setFormData(INITIAL_PERSON_STATE);
         setError('');
+    };
+
+    // Хендлери для видалення
+    const handleOpenDelete = (person) => {
+        setPersonToDelete(person);
+        setDeleteOpen(true);
+    };
+
+    const handleCloseDelete = () => {
+        setDeleteOpen(false);
+        setPersonToDelete(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!personToDelete) return;
+
+        try {
+            const res = await fetch(`/api/persons/${personToDelete._id}`, {
+                method: 'DELETE',
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || 'Помилка при видаленні');
+            }
+
+            handleCloseDelete();
+            fetchData();
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     const handleMainChange = (e) => {
@@ -213,6 +250,9 @@ export default function Person() {
                                         <button onClick={() => handleOpenEdit(p)} className="btn_edit">
                                             Редагувати
                                         </button>
+                                        <button onClick={() => handleOpenDelete(p)} className="btn_delete">
+                                            Видалити
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -221,6 +261,7 @@ export default function Person() {
                 )}
             </div>
 
+            {/* Модальне вікно Створення / Редагування */}
             <Modal open={open} onClose={handleClose}>
                 <div className="modal_content">
                     <form onSubmit={handleSubmit} className="person_form">
@@ -291,6 +332,29 @@ export default function Person() {
                             </button>
                         </div>
                     </form>
+                </div>
+            </Modal>
+
+            {/* Модальне вікно Підтвердження видалення */}
+            <Modal open={deleteOpen} onClose={handleCloseDelete}>
+                <div className="modal_content modal_confirm">
+                    <h3>Підтвердження видалення</h3>
+                    <p>
+                        Ви дійсно бажаєте видалити картку особи{' '}
+                        <strong>
+                            {personToDelete &&
+                                `${personToDelete.lastName} ${personToDelete.firstName} ${personToDelete.middleName}`.trim()}
+                        </strong>
+                        ?
+                    </p>
+                    <div className="form_actions">
+                        <button onClick={handleConfirmDelete} className="btn_danger">
+                            Так, видалити
+                        </button>
+                        <button onClick={handleCloseDelete} className="btn_secondary">
+                            Скасувати
+                        </button>
+                    </div>
                 </div>
             </Modal>
         </div>

@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
 // Оновити властивість
 router.put('/:id', async (req, res) => {
     try {
-        const property = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const property = await Property.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' });
         res.json(property);
     } catch (err) {
         res.status(400).json({ message: err.message });
