@@ -10,6 +10,19 @@ const INITIAL_PERSON_STATE = {
     extraData: {},
 };
 
+const renderFormattedValue = (prop, rawValue) => {
+    if (rawValue === undefined || rawValue === null || rawValue === '') {
+        return <span style={{ color: '#999' }}>—</span>;
+    }
+    if (prop.property_type === 'boolean') {
+        return rawValue ? 'Так' : 'Ні';
+    }
+    if (prop.property_type === 'date') {
+        return String(rawValue).substring(0, 10);
+    }
+    return String(rawValue);
+};
+
 export default function Person() {
     const [persons, setPersons] = useState([]);
     const [properties, setProperties] = useState([]);
@@ -24,6 +37,19 @@ export default function Person() {
     // Модалка підтвердження видалення
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [personToDelete, setPersonToDelete] = useState(null);
+
+    const [viewOpen, setViewOpen] = useState(false);
+    const [personToView, setPersonToView] = useState(null);
+
+    const handleOpenView = (person) => {
+        setPersonToView(person);
+        setViewOpen(true);
+    };
+
+    const handleCloseView = () => {
+        setViewOpen(false);
+        setPersonToView(null);
+    };
 
     const fetchData = async () => {
         try {
@@ -247,6 +273,9 @@ export default function Person() {
                                         <strong>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</strong>
                                     </td>
                                     <td>
+                                        <button onClick={() => handleOpenView(p)} className="btn_view">
+                                            Перегляд
+                                        </button>
                                         <button onClick={() => handleOpenEdit(p)} className="btn_edit">
                                             Редагувати
                                         </button>
@@ -260,7 +289,44 @@ export default function Person() {
                     </table>
                 )}
             </div>
+            {/* Модальне вікно Перегляду */}
+            <Modal open={viewOpen} onClose={handleCloseView}>
+                <div className="modal_content">
+                    {personToView && (
+                        <div className="view_card">
+                            <h3>
+                                {`${personToView.lastName} ${personToView.firstName} ${personToView.middleName}`.trim()}
+                            </h3>
 
+                            <div className="view_section">
+                                <h4>Основні дані</h4>
+                                <p><strong>Стать:</strong> {personToView.gender === 'M' ? 'Чоловіча' : 'Жіноча'}</p>
+                                <p><strong>Tree Node ID:</strong> <code>{personToView.treeNodeId}</code></p>
+                            </div>
+
+                            {properties.length > 0 && (
+                                <div className="view_section">
+                                    <h4>Додаткова інформація</h4>
+                                    {properties.map((prop) => {
+                                        const val = personToView.extraData?.[prop.property_id];
+                                        return (
+                                            <p key={prop._id}>
+                                                <strong>{prop.property_name}:</strong> {renderFormattedValue(prop, val)}
+                                            </p>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            <div className="form_actions">
+                                <button onClick={handleCloseView} className="btn_secondary">
+                                    Закрити
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </Modal>
             {/* Модальне вікно Створення / Редагування */}
             <Modal open={open} onClose={handleClose}>
                 <div className="modal_content">
