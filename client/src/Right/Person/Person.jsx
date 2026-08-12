@@ -7,7 +7,6 @@ const INITIAL_PERSON_STATE = {
     firstName: '',
     middleName: '',
     gender: 'M',
-    treeNodeId: 'none',
     extraData: {},
 };
 
@@ -17,12 +16,10 @@ export default function Person() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Модалка та форма
     const [open, setOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState(INITIAL_PERSON_STATE);
 
-    // Завантаження людей та додаткових властивостей
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -32,14 +29,13 @@ export default function Person() {
             ]);
 
             if (!resPersons.ok || !resProps.ok) {
-                throw new Error('Помилка завантаження даних з сервера');
+                throw new Error('Помилка завантаження даних');
             }
 
             const personsData = await resPersons.json();
             const propsData = await resProps.json();
 
             setPersons(personsData);
-            // Більш коректно брати лише активні властивості для заповнення
             setProperties(propsData.filter((p) => p.is_active));
         } catch (err) {
             setError(err.message);
@@ -52,7 +48,6 @@ export default function Person() {
         fetchData();
     }, []);
 
-    // Хендлери відкриття/закриття модалки
     const handleOpenCreate = () => {
         setEditingId(null);
         setFormData(INITIAL_PERSON_STATE);
@@ -66,7 +61,6 @@ export default function Person() {
             firstName: person.firstName || '',
             middleName: person.middleName || '',
             gender: person.gender || 'M',
-            treeNodeId: person.treeNodeId || 'none',
             extraData: person.extraData || {},
         });
         setOpen(true);
@@ -79,13 +73,11 @@ export default function Person() {
         setError('');
     };
 
-    // Зміна основних полів
     const handleMainChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Зміна динамічних полів extraData
     const handleExtraChange = (propId, value) => {
         setFormData((prev) => ({
             ...prev,
@@ -96,7 +88,6 @@ export default function Person() {
         }));
     };
 
-    // Відправка форми
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -124,7 +115,6 @@ export default function Person() {
         }
     };
 
-    // Генерація поля вводу залежно від property_type
     const renderDynamicInput = (prop) => {
         const value = formData.extraData[prop.property_id] ?? '';
 
@@ -200,7 +190,6 @@ export default function Person() {
 
             {error && <div className="error_message">{error}</div>}
 
-            {/* Перелік існуючих карток */}
             <div className="persons_list">
                 {persons.length === 0 ? (
                     <p>Картки відсутні.</p>
@@ -208,18 +197,18 @@ export default function Person() {
                     <table>
                         <thead>
                             <tr>
-                                <th>ПІБ</th>
                                 <th>Tree Node ID</th>
+                                <th>ПІБ</th>
                                 <th>Дії</th>
                             </tr>
                         </thead>
                         <tbody>
                             {persons.map((p) => (
                                 <tr key={p._id}>
+                                    <td><code>{p.treeNodeId}</code></td>
                                     <td>
                                         <strong>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</strong>
                                     </td>
-                                    <td><code>{p.treeNodeId}</code></td>
                                     <td>
                                         <button onClick={() => handleOpenEdit(p)} className="btn_edit">
                                             Редагувати
@@ -232,13 +221,11 @@ export default function Person() {
                 )}
             </div>
 
-            {/* Модальне вікно Створення / Редагування */}
             <Modal open={open} onClose={handleClose}>
                 <div className="modal_content">
                     <form onSubmit={handleSubmit} className="person_form">
                         <h3>{editingId ? 'Редагувати картку' : 'Створити картку особи'}</h3>
 
-                        {/* Обов'язкові базові поля */}
                         <div className="form_section">
                             <h4>Основні дані</h4>
 
@@ -281,19 +268,8 @@ export default function Person() {
                                     <option value="F">Жіноча (F)</option>
                                 </select>
                             </div>
-
-                            <div className="form_group">
-                                <label>Tree Node ID:</label>
-                                <input
-                                    type="text"
-                                    name="treeNodeId"
-                                    value={formData.treeNodeId}
-                                    onChange={handleMainChange}
-                                />
-                            </div>
                         </div>
 
-                        {/* Динамічні додаткові поля */}
                         {properties.length > 0 && (
                             <div className="form_section">
                                 <h4>Додаткові властивості</h4>

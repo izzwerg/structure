@@ -9,7 +9,27 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
     try {
         const filter = req.query.includeInactive === 'true' ? {} : { isActive: true };
-        const persons = await Person.find(filter).sort({ lastName: 1, firstName: 1 });
+
+        const persons = await Person.aggregate([
+            { $match: filter },
+            {
+                $addFields: {
+                    // Якщо treeNodeId не 'none', перетворюємо рядок на число для коректного сортування
+                    numericTreeNodeId: {
+                        $cond: {
+                            if: { $eq: ['$treeNodeId', 'none'] },
+                            then: Number.MAX_SAFE_INTEGER, // 'none' відправляємо в кінець
+                            else: { $toInt: '$treeNodeId' } // Числові значення перетворюємо на Number
+                        }
+                    }
+                }
+            },
+            // Сортуємо: спочатку за числовим ID, потім за прізвищем та ім'ям
+            { $sort: { numericTreeNodeId: 1, lastName: 1, firstName: 1 } },
+            // Прибираємо тимчасове розрахункове поле перед відправкою
+            { $project: { numericTreeNodeId: 0 } }
+        ]);
+
         res.json(persons);
     } catch (err) {
         res.status(500).json({ message: 'Помилка завантаження списку' });
