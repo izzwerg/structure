@@ -184,7 +184,7 @@ export default function Person() {
                 return (
                     <input
                         type="date"
-                        value={value ? value.substring(0, 10) : ''}
+                        value={value ? String(value).substring(0, 10) : ''}
                         onChange={(e) => handleExtraChange(prop.property_id, e.target.value)}
                     />
                 );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-// import './Archive.css';
+import './Archive.css';
 
 export default function Archive() {
     const [archivedPersons, setArchivedPersons] = useState([]);
