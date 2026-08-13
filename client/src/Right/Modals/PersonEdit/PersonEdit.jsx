@@ -76,7 +76,7 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={onClose} hideBackdrop>
             <div className="modal_content">
                 <form onSubmit={handleSubmit} className="person_form">
                     <h3>{editingId ? 'Редагувати картку' : 'Створити картку особи'}</h3>
