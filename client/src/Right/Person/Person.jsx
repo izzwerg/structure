@@ -41,6 +41,12 @@ export default function Person() {
     const [viewOpen, setViewOpen] = useState(false);
     const [personToView, setPersonToView] = useState(null);
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredPersons = persons.filter((p) => {
+        const fullName = `${p.lastName} ${p.firstName} ${p.middleName}`.toLowerCase();
+        return fullName.includes(searchTerm.toLowerCase());
+    });
+
     const handleOpenView = (person) => {
         setPersonToView(person);
         setViewOpen(true);
@@ -246,15 +252,25 @@ export default function Person() {
     return (
         <div className="person_container">
             <h2>Картки осіб</h2>
+            <div className="person_filters">
+                <input
+                    type="text"
+                    placeholder="Пошук за ПІБ..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button onClick={handleOpenCreate} className="btn_primary">
+                    Додати картку
+                </button>
 
-            <button onClick={handleOpenCreate} className="btn_primary">
-                Додати картку
-            </button>
+            </div>
+
+
 
             {error && <div className="error_message">{error}</div>}
 
             <div className="persons_list">
-                {persons.length === 0 ? (
+                {filteredPersons.length === 0 ? (
                     <p>Картки відсутні.</p>
                 ) : (
                     <table>
@@ -266,7 +282,7 @@ export default function Person() {
                             </tr>
                         </thead>
                         <tbody>
-                            {persons.map((p) => (
+                            {filteredPersons.map((p) => (
                                 <tr key={p._id}>
                                     <td><code>{p.treeNodeId}</code></td>
                                     <td>

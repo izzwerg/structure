@@ -25,6 +25,12 @@ export default function Archive() {
     const [viewOpen, setViewOpen] = useState(false);
     const [personToView, setPersonToView] = useState(null);
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredPersons = archivedPersons.filter((p) => {
+        const fullName = `${p.lastName} ${p.firstName} ${p.middleName}`.toLowerCase();
+        return fullName.includes(searchTerm.toLowerCase());
+    });
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -85,25 +91,31 @@ export default function Archive() {
     return (
         <div className="archive_container">
             <h2>Архів карток (видалені)</h2>
+            <div className="person_filters">
+                <input
+                    type="text"
+                    placeholder="Пошук за ПІБ..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
 
             {error && <div className="error_message">{error}</div>}
 
             <div className="archive_list">
-                {archivedPersons.length === 0 ? (
+                {filteredPersons.length === 0 ? (
                     <p>В архіві немає жодної картки.</p>
                 ) : (
                     <table>
                         <thead>
                             <tr>
-                                <th>Tree Node ID</th>
                                 <th>ПІБ</th>
                                 <th>Дії</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {archivedPersons.map((p) => (
+                            {filteredPersons.map((p) => (
                                 <tr key={p._id}>
-                                    <td><code>{p.treeNodeId}</code></td>
                                     <td>
                                         <strong>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</strong>
                                     </td>

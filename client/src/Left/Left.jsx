@@ -28,18 +28,22 @@ function Left({ isNavOpen, setIsNavOpen, page, setPage, handleLogout }) {
                     <img src="person.svg" alt="person" className='nav_btn_logo' />
                     <span className='nav_btn_text'>PERSON</span>
                 </div>
-                <div className={clsx('nav_btn pointer', { 'active': page === 'person_model' })} onClick={() => setPage('person_model')}>
-                    <img src="person.svg" alt="person" className='nav_btn_logo' />
-                    <span className='nav_btn_text'>MODEL</span>
-                </div>
+
                 <div className={clsx('nav_btn pointer', { 'active': page === 'person_archive' })} onClick={() => setPage('person_archive')}>
                     <img src="person.svg" alt="person" className='nav_btn_logo' />
                     <span className='nav_btn_text'>ARCHIVE</span>
                 </div>
             </div>
-            <button onClick={handleLogout} className='logout_btn pointer'>
-                <img src="mono-logout.svg" alt="person" className='nav_btn_logo' />
-            </button>
+            <div className='nav_buttons_container'>
+                <div className={clsx('nav_btn pointer', { 'active': page === 'person_model' })} onClick={() => setPage('person_model')}>
+                    <img src="gear.svg" alt="person" className='nav_btn_logo' />
+                    <span className='nav_btn_text'>MODEL</span>
+                </div>
+                <button onClick={handleLogout} className='logout_btn pointer'>
+                    <img src="mono-logout.svg" alt="person" className='nav_btn_logo' />
+                </button>
+            </div>
+
         </div>
     )
 }
