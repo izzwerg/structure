@@ -1,19 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Archive.css';
-import Modal from '@mui/material/Modal';
-
-const renderFormattedValue = (prop, rawValue) => {
-    if (rawValue === undefined || rawValue === null || rawValue === '') {
-        return <span style={{ color: '#999' }}>—</span>;
-    }
-    if (prop.property_type === 'boolean') {
-        return rawValue ? 'Так' : 'Ні';
-    }
-    if (prop.property_type === 'date') {
-        return String(rawValue).substring(0, 10);
-    }
-    return String(rawValue);
-};
+import PersonView from '../Modals/PersonView/PersonView';
 
 export default function Archive() {
     const [archivedPersons, setArchivedPersons] = useState([]);
@@ -135,43 +122,12 @@ export default function Archive() {
             </div>
 
             {/* Модальне вікно Перегляду */}
-            <Modal open={viewOpen} onClose={handleCloseView}>
-                <div className="modal_content">
-                    {personToView && (
-                        <div className="view_card">
-                            <h3>
-                                {`${personToView.lastName} ${personToView.firstName} ${personToView.middleName}`.trim()}
-                            </h3>
-
-                            <div className="view_section">
-                                <h4>Основні дані</h4>
-                                <p><strong>Стать:</strong> {personToView.gender === 'M' ? 'Чоловіча' : 'Жіноча'}</p>
-                                <p><strong>Tree Node ID:</strong> <code>{personToView.treeNodeId}</code></p>
-                            </div>
-
-                            {properties.length > 0 && (
-                                <div className="view_section">
-                                    <h4>Додаткова інформація</h4>
-                                    {properties.map((prop) => {
-                                        const val = personToView.extraData?.[prop.property_id];
-                                        return (
-                                            <p key={prop._id}>
-                                                <strong>{prop.property_name}:</strong> {renderFormattedValue(prop, val)}
-                                            </p>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            <div className="form_actions">
-                                <button onClick={handleCloseView} className="btn_secondary">
-                                    Закрити
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </Modal>
+            <PersonView
+                open={viewOpen}
+                onClose={handleCloseView}
+                person={personToView}
+                properties={properties}
+            />
         </div>
     );
 }
