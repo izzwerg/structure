@@ -21,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/persons', personRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/structure', require('./routes/structure'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
