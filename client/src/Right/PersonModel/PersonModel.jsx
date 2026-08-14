@@ -168,14 +168,6 @@ export default function PersonModel() {
         }
     };
 
-    // Групування властивостей за категоріями
-    const groupedProperties = properties.reduce((acc, prop) => {
-        const catName = prop.category || 'Без категорії';
-        if (!acc[catName]) acc[catName] = [];
-        acc[catName].push(prop);
-        return acc;
-    }, {});
-
     // Переміщення категорії вгору/вниз у списку локально та збереження
     const handleMoveCategory = async (index, direction) => {
         const updatedCategories = [...categories];
@@ -241,46 +233,100 @@ export default function PersonModel() {
                 </button>
             </div>
 
-            {/* Відображення властивостей, згрупованих по категоріях */}
+            {/* Список властивостей, відсортований за порядком категорій */}
             <div className="properties_list">
-                {Object.keys(groupedProperties).length === 0 ? (
+                {properties.length === 0 ? (
                     <p>Властивостей поки немає.</p>
                 ) : (
-                    Object.entries(groupedProperties).map(([catName, propsList]) => (
-                        <div key={catName} className="category_group_block" style={{ marginBottom: '1.5rem' }}>
-                            <h3 className="category_title" style={{ borderBottom: '2px solid #007bff', paddingBottom: '0.3rem' }}>
-                                Категорія: {catName}
-                            </h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Order</th>
-                                        <th>Назва</th>
-                                        <th>ID</th>
-                                        <th>Тип</th>
-                                        <th>Статус</th>
-                                        <th>Дії</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {propsList.map((prop) => (
-                                        <tr key={prop._id} className={!prop.is_active ? 'inactive_row' : ''}>
-                                            <td>{prop.order}</td>
-                                            <td><strong>{prop.property_name}</strong></td>
-                                            <td><code>{prop.property_id}</code></td>
-                                            <td>{prop.property_type}</td>
-                                            <td>{prop.is_active ? 'Активна' : 'В архіві'}</td>
-                                            <td>
-                                                <button onClick={() => handleEdit(prop)} className="btn_edit">
-                                                    Редагувати
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ))
+                    <>
+                        {/* 1. Виводимо категорії у порядку з масиву `categories` */}
+                        {categories.map((cat) => {
+                            const catProps = properties.filter((p) => p.category === cat.name);
+                            if (catProps.length === 0) return null; // Перескочити порожні категорії
+
+                            return (
+                                <div key={cat._id} className="category_group_block" style={{ marginBottom: '1.5rem' }}>
+                                    <h3 className="category_title" style={{ borderBottom: '2px solid #007bff', paddingBottom: '0.3rem' }}>
+                                        Категорія: {cat.name}
+                                    </h3>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Назва</th>
+                                                <th>ID</th>
+                                                <th>Тип</th>
+                                                <th>Статус</th>
+                                                <th>Дії</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {catProps.map((prop) => (
+                                                <tr key={prop._id} className={!prop.is_active ? 'inactive_row' : ''}>
+                                                    <td>{prop.order}</td>
+                                                    <td><strong>{prop.property_name}</strong></td>
+                                                    <td><code>{prop.property_id}</code></td>
+                                                    <td>{prop.property_type}</td>
+                                                    <td>{prop.is_active ? 'Активна' : 'В архіві'}</td>
+                                                    <td>
+                                                        <button onClick={() => handleEdit(prop)} className="btn_edit">
+                                                            Редагувати
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            );
+                        })}
+
+                        {/* 2. Блок для властивостей без категорії або з невідомою категорією */}
+                        {(() => {
+                            const knownCategoryNames = categories.map((c) => c.name);
+                            const uncategorizedProps = properties.filter(
+                                (p) => !p.category || !knownCategoryNames.includes(p.category)
+                            );
+
+                            if (uncategorizedProps.length === 0) return null;
+
+                            return (
+                                <div className="category_group_block" style={{ marginBottom: '1.5rem' }}>
+                                    <h3 className="category_title" style={{ borderBottom: '2px solid #6c757d', paddingBottom: '0.3rem' }}>
+                                        Без категорії / Інше
+                                    </h3>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Назва</th>
+                                                <th>ID</th>
+                                                <th>Тип</th>
+                                                <th>Статус</th>
+                                                <th>Дії</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {uncategorizedProps.map((prop) => (
+                                                <tr key={prop._id} className={!prop.is_active ? 'inactive_row' : ''}>
+                                                    <td>{prop.order}</td>
+                                                    <td><strong>{prop.property_name}</strong></td>
+                                                    <td><code>{prop.property_id}</code></td>
+                                                    <td>{prop.property_type}</td>
+                                                    <td>{prop.is_active ? 'Активна' : 'В архіві'}</td>
+                                                    <td>
+                                                        <button onClick={() => handleEdit(prop)} className="btn_edit">
+                                                            Редагувати
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            );
+                        })()}
+                    </>
                 )}
             </div>
 
