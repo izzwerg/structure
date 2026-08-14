@@ -8,7 +8,6 @@ const authMiddleware = require('../middleware/auth');
 
 router.use(authMiddleware);
 
-// Отримати або створити корінь структури
 async function getOrCreateRoot() {
     let root = await RootStructure.findOne();
     if (!root) {
@@ -17,7 +16,7 @@ async function getOrCreateRoot() {
     return root;
 }
 
-// 1. Отримати всю структуру та прив'язаних людей
+// 1. Отримати всю структуру
 router.get('/', async (req, res) => {
     try {
         const root = await getOrCreateRoot();
@@ -36,10 +35,19 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 2. Створити новий підрозділ (+s)
+// Допоміжна функція вставки елемента в заданий індекс масиву items
+function insertIntoItems(items, newItem, insertIndex) {
+    if (typeof insertIndex === 'number' && insertIndex >= 0 && insertIndex <= items.length) {
+        items.splice(insertIndex + 1, 0, newItem);
+    } else {
+        items.push(newItem);
+    }
+}
+
+// 2. Створити підрозділ (+s) з підтримкою insertIndex
 router.post('/subdivision', async (req, res) => {
     try {
-        const { title, fullTitle, shortTitle, parentId } = req.body;
+        const { title, fullTitle, shortTitle, parentId, insertIndex } = req.body;
 
         const subdivision = await Subdivision.create({
             title,
@@ -49,13 +57,17 @@ router.post('/subdivision', async (req, res) => {
             items: [],
         });
 
+        const newItem = { kind: 'subdivision', itemId: subdivision._id };
+
         if (parentId) {
-            await Subdivision.findByIdAndUpdate(parentId, {
-                $push: { items: { kind: 'subdivision', itemId: subdivision._id } },
-            });
+            const parentSub = await Subdivision.findById(parentId);
+            if (parentSub) {
+                insertIntoItems(parentSub.items, newItem, insertIndex);
+                await parentSub.save();
+            }
         } else {
             const root = await getOrCreateRoot();
-            root.items.push({ kind: 'subdivision', itemId: subdivision._id });
+            insertIntoItems(root.items, newItem, insertIndex);
             await root.save();
         }
 
@@ -65,14 +77,14 @@ router.post('/subdivision', async (req, res) => {
     }
 });
 
-// 3. Створити нову посаду (+p)
+// 3. Створити посаду (+p) з підтримкою insertIndex
 router.post('/position', async (req, res) => {
     try {
-        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff, parentId } = req.body;
+        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff, parentId, insertIndex } = req.body;
 
         const existingPos = await Position.findOne({ treeNodeId });
         if (existingPos) {
-            return res.status(400).json({ message: `Посада з Tree Node ID "${treeNodeId}" вже існує` });
+            return res.status(400).json({ message: `Посада з ID "${treeNodeId}" вже існує` });
         }
 
         const position = await Position.create({
@@ -85,13 +97,17 @@ router.post('/position', async (req, res) => {
             subdivisionId: parentId || null,
         });
 
+        const newItem = { kind: 'position', itemId: position._id };
+
         if (parentId) {
-            await Subdivision.findByIdAndUpdate(parentId, {
-                $push: { items: { kind: 'position', itemId: position._id } },
-            });
+            const parentSub = await Subdivision.findById(parentId);
+            if (parentSub) {
+                insertIntoItems(parentSub.items, newItem, insertIndex);
+                await parentSub.save();
+            }
         } else {
             const root = await getOrCreateRoot();
-            root.items.push({ kind: 'position', itemId: position._id });
+            insertIntoItems(root.items, newItem, insertIndex);
             await root.save();
         }
 
@@ -101,20 +117,100 @@ router.post('/position', async (req, res) => {
     }
 });
 
-// 4. Призначити людину на посаду (або зняти з посади)
+// 4. Призначити/зняти особу з посади
 router.post('/assign-person', async (req, res) => {
     try {
         const { personId, treeNodeId } = req.body;
-
         const person = await Person.findByIdAndUpdate(
             personId,
             { treeNodeId },
             { returnDocument: 'after' }
         );
-
         res.json(person);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+});
+
+// 5. Видалити посаду
+router.delete('/position/:id', async (req, res) => {
+    try {
+        const posId = req.params.id;
+        const position = await Position.findById(posId);
+        if (!position) return res.status(404).json({ message: 'Посаду не знайдено' });
+
+        // Очищаємо Tree Node ID у прив'язаної людини (скидаємо на 'none')
+        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: 'none' });
+
+        // Видаляємо посилання з батьківського підрозділу чи кореня
+        await Subdivision.updateMany({}, { $pull: { items: { itemId: posId } } });
+        await RootStructure.updateMany({}, { $pull: { items: { itemId: posId } } });
+
+        // Видаляємо саму посаду
+        await Position.findByIdAndDelete(posId);
+
+        res.json({ message: 'Посаду видалено' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Рекурсивна функція для збору всіх дочірніх посад та підрозділів
+async function collectNestedIds(subdivisionId) {
+    let subIds = [subdivisionId];
+    let posIds = [];
+    let treeNodeIdsToReset = [];
+
+    const sub = await Subdivision.findById(subdivisionId).lean();
+    if (!sub) return { subIds, posIds, treeNodeIdsToReset };
+
+    for (const item of sub.items) {
+        if (item.kind === 'position') {
+            posIds.push(item.itemId);
+            const pos = await Position.findById(item.itemId).lean();
+            if (pos) treeNodeIdsToReset.push(pos.treeNodeId);
+        } else if (item.kind === 'subdivision') {
+            const nested = await collectNestedIds(item.itemId);
+            subIds.push(...nested.subIds);
+            posIds.push(...nested.posIds);
+            treeNodeIdsToReset.push(...nested.treeNodeIdsToReset);
+        }
+    }
+
+    return { subIds, posIds, treeNodeIdsToReset };
+}
+
+// 6. Видалити підрозділ (каскадне видалення всього вмісту)
+router.delete('/subdivision/:id', async (req, res) => {
+    try {
+        const targetSubId = req.params.id;
+
+        // Збираємо всі підпідрозділи та посади
+        const { subIds, posIds, treeNodeIdsToReset } = await collectNestedIds(targetSubId);
+
+        // Скидаємо картки людей у 'none'
+        if (treeNodeIdsToReset.length > 0) {
+            await Person.updateMany(
+                { treeNodeId: { $in: treeNodeIdsToReset } },
+                { treeNodeId: 'none' }
+            );
+        }
+
+        // Видаляємо всі посади
+        if (posIds.length > 0) {
+            await Position.deleteMany({ _id: { $in: posIds } });
+        }
+
+        // Видаляємо всі підрозділи
+        await Subdivision.deleteMany({ _id: { $in: subIds } });
+
+        // Видаляємо посилання на цей підрозділ із батьків
+        await Subdivision.updateMany({}, { $pull: { items: { itemId: targetSubId } } });
+        await RootStructure.updateMany({}, { $pull: { items: { itemId: targetSubId } } });
+
+        res.json({ message: 'Підрозділ та весь його вміст успішно видалено' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 

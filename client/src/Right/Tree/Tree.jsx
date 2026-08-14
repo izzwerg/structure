@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import SubdivisionNode from './SubdivisionNode';
 import PositionNode from './PositionNode';
@@ -24,9 +24,14 @@ export default function Tree() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    // Модалки створення (+p / +s)
-    const [modalType, setModalType] = useState(null); // 'position' | 'subdivision'
+    // Режим редагування
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    // Модалки додавання (+p / +s)
+    const [modalType, setModalType] = useState(null);
     const [targetParentId, setTargetParentId] = useState(null);
+    const [insertIndex, setInsertIndex] = useState(null);
+
     const [subForm, setSubForm] = useState(INITIAL_SUBDIVISION_FORM);
     const [posForm, setPosForm] = useState(INITIAL_POSITION_FORM);
 
@@ -53,7 +58,6 @@ export default function Tree() {
         fetchStructure();
     }, []);
 
-    // Допоміжні карти (Maps) для швидкого доступу за ID
     const subdivisionsMap = structureData.subdivisions.reduce((acc, item) => {
         acc[item._id] = item;
         return acc;
@@ -71,14 +75,14 @@ export default function Tree() {
         return acc;
     }, {});
 
-    // Картки людей з treeNodeId === 'none'
     const unassignedPersons = structureData.persons.filter(
         (p) => !p.treeNodeId || p.treeNodeId === 'none'
     );
 
-    const handleOpenAddModal = (type, parentId = null) => {
+    const handleOpenAddModal = (type, parentId = null, index = null) => {
         setModalType(type);
         setTargetParentId(parentId);
+        setInsertIndex(index);
         setSubForm(INITIAL_SUBDIVISION_FORM);
         setPosForm(INITIAL_POSITION_FORM);
     };
@@ -86,6 +90,7 @@ export default function Tree() {
     const handleCloseAddModal = () => {
         setModalType(null);
         setTargetParentId(null);
+        setInsertIndex(null);
     };
 
     const handleCreateSubdivision = async (e) => {
@@ -94,7 +99,11 @@ export default function Tree() {
             const res = await fetch('/api/structure/subdivision', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...subForm, parentId: targetParentId }),
+                body: JSON.stringify({
+                    ...subForm,
+                    parentId: targetParentId,
+                    insertIndex,
+                }),
             });
             if (!res.ok) {
                 const data = await res.json();
@@ -113,7 +122,11 @@ export default function Tree() {
             const res = await fetch('/api/structure/position', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...posForm, parentId: targetParentId }),
+                body: JSON.stringify({
+                    ...posForm,
+                    parentId: targetParentId,
+                    insertIndex,
+                }),
             });
             if (!res.ok) {
                 const data = await res.json();
@@ -126,7 +139,30 @@ export default function Tree() {
         }
     };
 
-    // Призначення та зняття людини
+    // Видалення посади
+    const handleDeletePosition = async (id) => {
+        if (!window.confirm('Ви дійсно бажаєте видалити цю посаду?')) return;
+        try {
+            const res = await fetch(`/api/structure/position/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Помилка видалення посади');
+            fetchStructure();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    // Видалення підрозділу (і всього вкладеного)
+    const handleDeleteSubdivision = async (id, title) => {
+        if (!window.confirm(`Ви дійсно бажаєте видалити підрозділ "${title}" та ВСІ вкладені підрозділи й посади?`)) return;
+        try {
+            const res = await fetch(`/api/structure/subdivision/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Помилка видалення підрозділу');
+            fetchStructure();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
     const handleOpenAssign = (treeNodeId) => {
         setSelectedPositionNodeId(treeNodeId);
         setSelectedPersonId('');
@@ -171,74 +207,118 @@ export default function Tree() {
 
     if (loading) return <div className="tree_container">Завантаження...</div>;
 
+    const rootItems = structureData.rootItems || [];
+
     return (
         <div className="tree_container">
-            <h2>Організаційна структура</h2>
+            {/* Верхня панель з заголовком і перемикачем режиму редагування */}
+            <div className="tree_top_bar">
+                <h2>Організаційна структура</h2>
+                <button
+                    type="button"
+                    className={`btn_toggle_edit ${isEditMode ? 'active' : ''}`}
+                    onClick={() => setIsEditMode(!isEditMode)}
+                >
+                    {isEditMode ? 'Режим редагування: УВІМКНЕНО' : 'Режим редагування: ВИМКНЕНО'}
+                </button>
+            </div>
 
             {error && <div className="error_message">{error}</div>}
 
-            {/* Головна область виводу дерева */}
             <div className="tree_workspace">
-                {structureData.rootItems.map((item) => {
+                {/* Якщо кореневий рівень порожній */}
+                {isEditMode && rootItems.length === 0 && (
+                    <div className="action_buttons_group">
+                        <button
+                            type="button"
+                            className="btn_tree_action"
+                            onClick={() => handleOpenAddModal('position', null, -1)}
+                        >
+                            Додати посаду
+                        </button>
+                        <button
+                            type="button"
+                            className="btn_tree_action"
+                            onClick={() => handleOpenAddModal('subdivision', null, -1)}
+                        >
+                            Додати підрозділ
+                        </button>
+                    </div>
+                )}
+
+                {/* Кореневі елементи з кнопками вставки після кожного з них */}
+                {rootItems.map((item, index) => {
+                    let renderedNode = null;
+
                     if (item.kind === 'position') {
                         const pos = positionsMap[item.itemId];
-                        if (!pos) return null;
-                        return (
-                            <PositionNode
-                                key={pos._id}
-                                position={pos}
-                                person={personsByNodeId[pos.treeNodeId]}
-                                onAssignClick={handleOpenAssign}
-                                onUnassignClick={handleUnassignPerson}
-                            />
-                        );
-                    }
-
-                    if (item.kind === 'subdivision') {
+                        if (pos) {
+                            renderedNode = (
+                                <PositionNode
+                                    key={pos._id}
+                                    position={pos}
+                                    person={personsByNodeId[pos.treeNodeId]}
+                                    isEditMode={isEditMode}
+                                    onAssignClick={handleOpenAssign}
+                                    onUnassignClick={handleUnassignPerson}
+                                    onDeletePosition={handleDeletePosition}
+                                />
+                            );
+                        }
+                    } else if (item.kind === 'subdivision') {
                         const sub = subdivisionsMap[item.itemId];
-                        if (!sub) return null;
-                        return (
-                            <SubdivisionNode
-                                key={sub._id}
-                                subdivision={sub}
-                                subdivisionsMap={subdivisionsMap}
-                                positionsMap={positionsMap}
-                                personsByNodeId={personsByNodeId}
-                                onOpenAddModal={handleOpenAddModal}
-                                onAssignClick={handleOpenAssign}
-                                onUnassignClick={handleUnassignPerson}
-                            />
-                        );
+                        if (sub) {
+                            renderedNode = (
+                                <SubdivisionNode
+                                    key={sub._id}
+                                    subdivision={sub}
+                                    subdivisionsMap={subdivisionsMap}
+                                    positionsMap={positionsMap}
+                                    personsByNodeId={personsByNodeId}
+                                    isEditMode={isEditMode}
+                                    onOpenAddModal={handleOpenAddModal}
+                                    onAssignClick={handleOpenAssign}
+                                    onUnassignClick={handleUnassignPerson}
+                                    onDeletePosition={handleDeletePosition}
+                                    onDeleteSubdivision={handleDeleteSubdivision}
+                                />
+                            );
+                        }
                     }
 
-                    return null;
-                })}
+                    return (
+                        <React.Fragment key={item.itemId || index}>
+                            {renderedNode}
 
-                {/* Кнопки додавання на найвищому (кореневому) рівні */}
-                <div className="action_buttons_group root_actions">
-                    <button
-                        type="button"
-                        className="btn_tree_action"
-                        onClick={() => handleOpenAddModal('position', null)}
-                    >
-                        Додати посаду
-                    </button>
-                    <button
-                        type="button"
-                        className="btn_tree_action"
-                        onClick={() => handleOpenAddModal('subdivision', null)}
-                    >
-                        Додати підрозділ
-                    </button>
-                </div>
+                            {/* Кнопки вставки строго після кожного кореневого елемента */}
+                            {isEditMode && (
+                                <div className="action_buttons_group">
+                                    <button
+                                        type="button"
+                                        className="btn_tree_action"
+                                        onClick={() => handleOpenAddModal('position', null, index)}
+                                    >
+                                        Додати посаду
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn_tree_action"
+                                        onClick={() => handleOpenAddModal('subdivision', null, index)}
+                                    >
+                                        Додати підрозділ
+                                    </button>
+                                </div>
+                            )}
+                        </React.Fragment>
+                    );
+                })}
             </div>
 
-            {/* Модальне вікно створення підрозділу (+s) */}
+            {/* Модальне вікно створення підрозділу */}
             <Modal open={modalType === 'subdivision'} onClose={handleCloseAddModal}>
                 <div className="modal_content">
                     <form onSubmit={handleCreateSubdivision} className="property_form">
                         <h3>Створити новий підрозділ</h3>
-
                         <div className="form_group">
                             <label>Звичайна назва:*</label>
                             <input
@@ -248,7 +328,6 @@ export default function Tree() {
                                 required
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Повна назва:*</label>
                             <input
@@ -258,7 +337,6 @@ export default function Tree() {
                                 required
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Скорочена назва:*</label>
                             <input
@@ -268,7 +346,6 @@ export default function Tree() {
                                 required
                             />
                         </div>
-
                         <div className="form_actions">
                             <button type="submit" className="btn_primary">Створити</button>
                             <button type="button" onClick={handleCloseAddModal} className="btn_secondary">Скасувати</button>
@@ -277,12 +354,11 @@ export default function Tree() {
                 </div>
             </Modal>
 
-            {/* Модальне вікно створення посади (+p) */}
+            {/* Модальне вікно створення посади */}
             <Modal open={modalType === 'position'} onClose={handleCloseAddModal}>
                 <div className="modal_content">
                     <form onSubmit={handleCreatePosition} className="property_form">
                         <h3>Створити нову посаду</h3>
-
                         <div className="form_group">
                             <label>Номер за порядком (Tree Node ID):*</label>
                             <input
@@ -293,7 +369,6 @@ export default function Tree() {
                                 required
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Коротка назва посади:*</label>
                             <input
@@ -303,7 +378,6 @@ export default function Tree() {
                                 required
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Повна назва посади:</label>
                             <input
@@ -312,7 +386,6 @@ export default function Tree() {
                                 onChange={(e) => setPosForm({ ...posForm, fullTitle: e.target.value })}
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Потрібне звання:</label>
                             <input
@@ -321,7 +394,6 @@ export default function Tree() {
                                 onChange={(e) => setPosForm({ ...posForm, rank: e.target.value })}
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Номер спеціальності:</label>
                             <input
@@ -330,7 +402,6 @@ export default function Tree() {
                                 onChange={(e) => setPosForm({ ...posForm, specialtyCode: e.target.value })}
                             />
                         </div>
-
                         <div className="form_group">
                             <label>Тариф:</label>
                             <input
@@ -339,7 +410,6 @@ export default function Tree() {
                                 onChange={(e) => setPosForm({ ...posForm, tariff: e.target.value })}
                             />
                         </div>
-
                         <div className="form_actions">
                             <button type="submit" className="btn_primary">Створити</button>
                             <button type="button" onClick={handleCloseAddModal} className="btn_secondary">Скасувати</button>
@@ -348,12 +418,11 @@ export default function Tree() {
                 </div>
             </Modal>
 
-            {/* Модальне вікно призначення людини з переліку (treeNodeId == none) */}
+            {/* Модальне вікно призначення людини */}
             <Modal open={assignModalOpen} onClose={() => setAssignModalOpen(false)}>
                 <div className="modal_content">
                     <form onSubmit={handleConfirmAssign} className="property_form">
                         <h3>Призначити особу на посаду (ID: {selectedPositionNodeId})</h3>
-
                         <div className="form_group">
                             <label>Оберіть особу зі списку (Tree Node ID = none):</label>
                             {unassignedPersons.length === 0 ? (
@@ -373,7 +442,6 @@ export default function Tree() {
                                 </select>
                             )}
                         </div>
-
                         <div className="form_actions">
                             <button
                                 type="submit"
