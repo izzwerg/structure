@@ -13,8 +13,19 @@ const renderFormattedValue = (prop, rawValue) => {
     return String(rawValue);
 };
 
+const groupPropertiesByCategory = (propsList) => {
+    return propsList.reduce((acc, prop) => {
+        const cat = prop.category || 'Загальне';
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(prop);
+        return acc;
+    }, {});
+};
+
 const PersonView = ({ open, onClose, person, properties }) => {
     if (!person) return null;
+
+    const groupedProperties = groupPropertiesByCategory(properties);
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -31,10 +42,10 @@ const PersonView = ({ open, onClose, person, properties }) => {
                             <p><strong>Tree Node ID:</strong> <code>{person.treeNodeId}</code></p>
                         </div>
 
-                        {properties.length > 0 && (
-                            <div className="view_section">
-                                <h4>Додаткова інформація</h4>
-                                {properties.map((prop) => {
+                        {properties.length > 0 && Object.entries(groupedProperties).map(([categoryName, propsGroup]) => (
+                            <div key={categoryName} className="view_section">
+                                <h4>{categoryName}</h4>
+                                {propsGroup.map((prop) => {
                                     const val = person.extraData?.[prop.property_id];
                                     return (
                                         <p key={prop._id}>
@@ -43,7 +54,7 @@ const PersonView = ({ open, onClose, person, properties }) => {
                                     );
                                 })}
                             </div>
-                        )}
+                        ))}
 
                         <div className="form_actions">
                             <button onClick={onClose} className="btn_secondary">
@@ -55,6 +66,6 @@ const PersonView = ({ open, onClose, person, properties }) => {
             </div>
         </Modal>
     );
-}
+};
 
 export default PersonView;

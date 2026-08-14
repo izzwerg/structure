@@ -1,5 +1,14 @@
 import Modal from '@mui/material/Modal';
 
+const groupPropertiesByCategory = (propsList) => {
+    return propsList.reduce((acc, prop) => {
+        const cat = prop.category || 'Загальне';
+        if (!acc[cat]) acc[cat] = [];
+        acc[cat].push(prop);
+        return acc;
+    }, {});
+};
+
 const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormData, handleMainChange, properties }) => {
 
     const handleExtraChange = (propId, value) => {
@@ -13,7 +22,7 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
     };
 
     const renderDynamicInput = (prop) => {
-        const value = formData.extraData[prop.property_id] ?? '';
+        const value = formData.extraData?.[prop.property_id] ?? '';
 
         switch (prop.property_type) {
             case 'text':
@@ -75,6 +84,8 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
         }
     };
 
+    const groupedProperties = groupPropertiesByCategory(properties);
+
     return (
         <Modal open={open} onClose={onClose} hideBackdrop>
             <div className="modal_content">
@@ -125,17 +136,17 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
                         </div>
                     </div>
 
-                    {properties.length > 0 && (
-                        <div className="form_section">
-                            <h4>Додаткові властивості</h4>
-                            {properties.map((prop) => (
+                    {properties.length > 0 && Object.entries(groupedProperties).map(([categoryName, propsGroup]) => (
+                        <div key={categoryName} className="form_section">
+                            <h4>{categoryName}</h4>
+                            {propsGroup.map((prop) => (
                                 <div key={prop._id} className="form_group">
                                     <label>{prop.property_name}:</label>
                                     {renderDynamicInput(prop)}
                                 </div>
                             ))}
                         </div>
-                    )}
+                    ))}
 
                     <div className="form_actions">
                         <button type="submit" className="btn_primary">
@@ -149,7 +160,6 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
             </div>
         </Modal>
     );
-
-}
+};
 
 export default PersonEdit;
