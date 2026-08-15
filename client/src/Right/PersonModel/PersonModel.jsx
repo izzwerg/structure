@@ -1,15 +1,8 @@
 import { useState, useEffect } from 'react';
 import './PersonModel.css';
-import Modal from '@mui/material/Modal';
+import ModelEdit from './Modals/ModelEdit';
+import CatCreate from './Modals/CatCreate';
 
-const PROPERTY_TYPES = [
-    { value: 'text', label: 'Текст (однорядковий)' },
-    { value: 'textarea', label: 'Текстове поле (багаторядкове)' },
-    { value: 'number', label: 'Число' },
-    { value: 'date', label: 'Дата' },
-    { value: 'boolean', label: 'Перемикач (так/ні)' },
-    { value: 'select', label: 'Вибір зі списку' },
-];
 
 const INITIAL_FORM_STATE = {
     property_id: '',
@@ -161,7 +154,6 @@ export default function PersonModel() {
 
             setNewCategoryName('');
             setNewCategoryOrder(0);
-            setCategoryModalOpen(false);
             fetchData();
         } catch (err) {
             setError(err.message);
@@ -331,223 +323,26 @@ export default function PersonModel() {
             </div>
 
             {/* Модалка для додавання / редагування властивості */}
-            <Modal open={open} onClose={handleClose}>
-                <div className="modal_content">
-                    <form onSubmit={handleSubmit} className="property_form">
-                        <h3>{editingId ? 'Редагувати властивість' : 'Створити нову властивість'}</h3>
-
-                        <div className="form_group">
-                            <label>Назва для відображення:</label>
-                            <input
-                                type="text"
-                                name="property_name"
-                                value={formData.property_name}
-                                onChange={handleChange}
-                                placeholder="наприклад, ІНН"
-                                required
-                            />
-                        </div>
-
-                        <div className="form_group">
-                            <label>Унікальний ID (property_id):</label>
-                            <input
-                                type="text"
-                                name="property_id"
-                                value={formData.property_id}
-                                onChange={handleChange}
-                                placeholder="наприклад, inn"
-                                disabled={!!editingId}
-                                required
-                            />
-                        </div>
-
-                        <div className="form_group">
-                            <label>Тип поля:</label>
-                            <select name="property_type" value={formData.property_type} onChange={handleChange}>
-                                {PROPERTY_TYPES.map((t) => (
-                                    <option key={t.value} value={t.value}>
-                                        {t.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {formData.property_type === 'select' && (
-                            <div className="form_group">
-                                <label>Варіанти (через кому):</label>
-                                <input
-                                    type="text"
-                                    name="optionsString"
-                                    value={formData.optionsString}
-                                    onChange={handleChange}
-                                    placeholder="I+, II+, III+, IV+"
-                                    required
-                                />
-                            </div>
-                        )}
-
-                        <div className="form_group">
-                            <label>Категорія:</label>
-                            <select name="category" value={formData.category} onChange={handleChange}>
-                                {categories.length === 0 && <option value="Загальне">Загальне</option>}
-                                {categories.map((cat) => (
-                                    <option key={cat._id} value={cat.name}>
-                                        {cat.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="form_group">
-                            <label>Порядок сортування (order):</label>
-                            <input type="number" name="order" value={formData.order} onChange={handleChange} />
-                        </div>
-
-                        <div className="form_group checkbox_group">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="is_active"
-                                    checked={formData.is_active}
-                                    onChange={handleChange}
-                                />
-                                Активна властивість
-                            </label>
-                        </div>
-
-                        <div className="form_actions">
-                            <button type="submit" className="btn_primary">
-                                {editingId ? 'Оновити' : 'Створити'}
-                            </button>
-                            <button type="button" onClick={handleClose} className="btn_secondary">
-                                Скасувати
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-
-            {/* Модалка створення категорії */}
-            <Modal open={categoryModalOpen} onClose={() => setCategoryModalOpen(false)}>
-                <div className="modal_content">
-                    <form onSubmit={handleCreateCategory} className="property_form">
-                        <h3>Додати категорію</h3>
-                        <div className="form_group">
-                            <label>Назва категорії:</label>
-                            <input
-                                type="text"
-                                value={newCategoryName}
-                                onChange={(e) => setNewCategoryName(e.target.value)}
-                                placeholder="наприклад, Паспортні дані"
-                                required
-                            />
-                        </div>
-                        <div className="form_group">
-                            <label>Порядок (order):</label>
-                            <input
-                                type="number"
-                                value={newCategoryOrder}
-                                onChange={(e) => setNewCategoryOrder(e.target.value)}
-                            />
-                        </div>
-                        <div className="form_actions">
-                            <button type="submit" className="btn_primary">
-                                Створити
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setCategoryModalOpen(false)}
-                                className="btn_secondary"
-                            >
-                                Скасувати
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-            {/* Модалка управління категоріями */}
-            <Modal open={categoryModalOpen} onClose={() => setCategoryModalOpen(false)}>
-                <div className="modal_content" style={{ maxWidth: '500px' }}>
-                    <h3>Управління категоріями</h3>
-
-                    {/* Форма швидкого створення */}
-                    <form onSubmit={handleCreateCategory} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                        <input
-                            type="text"
-                            value={newCategoryName}
-                            onChange={(e) => setNewCategoryName(e.target.value)}
-                            placeholder="Назва нової категорії..."
-                            required
-                            style={{ flex: 1, padding: '0.4rem' }}
-                        />
-                        <button type="submit" className="btn_primary">
-                            Додати
-                        </button>
-                    </form>
-
-                    {/* Список категорій з можливістю зміни порядку */}
-                    <div className="categories_reorder_list">
-                        <h4>Порядок виведення категорій:</h4>
-                        {categories.length === 0 ? (
-                            <p>Категорії відсутні.</p>
-                        ) : (
-                            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                {categories.map((cat, index) => (
-                                    <li
-                                        key={cat._id}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            padding: '0.5rem 0.8rem',
-                                            border: '1px solid #ddd',
-                                            borderRadius: '4px',
-                                            background: '#f9f9f9',
-                                        }}
-                                    >
-                                        <span style={{ fontWeight: 600 }}>{cat.name}</span>
-
-                                        <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-                                            <button
-                                                type="button"
-                                                disabled={index === 0}
-                                                onClick={() => handleMoveCategory(index, 'up')}
-                                                style={{ cursor: index === 0 ? 'not-allowed' : 'pointer', padding: '0.2rem 0.5rem' }}
-                                                title="Перемістити вгору"
-                                            >
-                                                ▲
-                                            </button>
-                                            <button
-                                                type="button"
-                                                disabled={index === categories.length - 1}
-                                                onClick={() => handleMoveCategory(index, 'down')}
-                                                style={{ cursor: index === categories.length - 1 ? 'not-allowed' : 'pointer', padding: '0.2rem 0.5rem' }}
-                                                title="Перемістити вниз"
-                                            >
-                                                ▼
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteCategory(cat._id)}
-                                                className="btn_delete"
-                                                style={{ marginLeft: '0.5rem' }}
-                                            >
-                                                Видалити
-                                            </button>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-
-                    <div className="form_actions" style={{ marginTop: '1.5rem' }}>
-                        <button type="button" onClick={() => setCategoryModalOpen(false)} className="btn_secondary">
-                            Закрити
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+            <ModelEdit
+                open={open}
+                handleClose={handleClose}
+                handleSubmit={handleSubmit}
+                formData={formData}
+                handleChange={handleChange}
+                editingId={editingId}
+                categories={categories}
+            />
+            {/* Модалка для категорій */}
+            <CatCreate
+                categoryModalOpen={categoryModalOpen}
+                setCategoryModalOpen={setCategoryModalOpen}
+                handleCreateCategory={handleCreateCategory}
+                newCategoryName={newCategoryName}
+                setNewCategoryName={setNewCategoryName}
+                categories={categories}
+                handleMoveCategory={handleMoveCategory}
+                handleDeleteCategory={handleDeleteCategory}
+            />
         </div>
     );
 }
