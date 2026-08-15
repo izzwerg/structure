@@ -6,6 +6,7 @@ export default function PositionNode({
     isEditMode,
     onAssignClick,
     onUnassignClick,
+    onEditPosition,
     onDeletePosition,
 }) {
     return (
@@ -41,14 +42,24 @@ export default function PositionNode({
                 </div>
 
                 {isEditMode && (
-                    <button
-                        type="button"
-                        className="btn_delete_node"
-                        title="Видалити посаду"
-                        onClick={() => onDeletePosition(position._id)}
-                    >
-                        ✕
-                    </button>
+                    <div className="node_actions">
+                        <button
+                            type="button"
+                            className="btn_edit_node"
+                            title="Редагувати посаду"
+                            onClick={() => onEditPosition(position)}
+                        >
+                            ✎
+                        </button>
+                        <button
+                            type="button"
+                            className="btn_delete_node"
+                            title="Видалити посаду"
+                            onClick={() => onDeletePosition(position._id)}
+                        >
+                            ✕
+                        </button>
+                    </div>
                 )}
             </div>
         </div>

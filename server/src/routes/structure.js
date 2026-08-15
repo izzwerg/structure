@@ -214,4 +214,59 @@ router.delete('/subdivision/:id', async (req, res) => {
     }
 });
 
+// PUT /api/structure/subdivision/:id — редагування підрозділу
+router.put('/subdivision/:id', async (req, res) => {
+    try {
+        const { title, fullTitle, shortTitle } = req.body;
+        const subdivision = await Subdivision.findByIdAndUpdate(
+            req.params.id,
+            { title, fullTitle, shortTitle },
+            { returnDocument: 'after' }
+        );
+
+        if (!subdivision) {
+            return res.status(404).json({ message: 'Підрозділ не знайдено' });
+        }
+
+        res.json(subdivision);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// PUT /api/structure/position/:id — редагування посади
+router.put('/position/:id', async (req, res) => {
+    try {
+        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff } = req.body;
+        const oldPosition = await Position.findById(req.params.id);
+
+        if (!oldPosition) {
+            return res.status(404).json({ message: 'Посаду не знайдено' });
+        }
+
+        // Якщо змінюється Tree Node ID — перевіряємо унікальність та оновлюємо прив'язану людину
+        if (treeNodeId !== oldPosition.treeNodeId) {
+            const exists = await Position.findOne({ treeNodeId });
+            if (exists) {
+                return res.status(400).json({ message: `Посада з ID "${treeNodeId}" вже існує` });
+            }
+
+            await Person.updateMany(
+                { treeNodeId: oldPosition.treeNodeId },
+                { treeNodeId }
+            );
+        }
+
+        const position = await Position.findByIdAndUpdate(
+            req.params.id,
+            { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff },
+            { returnDocument: 'after' }
+        );
+
+        res.json(position);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
 module.exports = router;

@@ -11,7 +11,9 @@ export default function SubdivisionNode({
     onOpenAddModal,
     onAssignClick,
     onUnassignClick,
+    onEditPosition,
     onDeletePosition,
+    onEditSubdivision,
     onDeleteSubdivision,
 }) {
     const items = subdivision.items || [];
@@ -21,20 +23,29 @@ export default function SubdivisionNode({
             <div className="subdivision_header">
                 <span className="subdivision_title">{subdivision.title}</span>
                 {isEditMode && (
-                    <button
-                        type="button"
-                        className="btn_delete_node"
-                        title="Видалити підрозділ із усім вмістом"
-                        onClick={() => onDeleteSubdivision(subdivision._id, subdivision.title)}
-                    >
-                        ✕ Видалити підрозділ
-                    </button>
+                    <div className="node_actions">
+                        <button
+                            type="button"
+                            className="btn_edit_node"
+                            title="Редагувати підрозділ"
+                            onClick={() => onEditSubdivision(subdivision)}
+                        >
+                            ✎ Редагувати
+                        </button>
+                        <button
+                            type="button"
+                            className="btn_delete_node"
+                            title="Видалити підрозділ із усім вмістом"
+                            onClick={() => onDeleteSubdivision(subdivision._id, subdivision.title)}
+                        >
+                            ✕ Видалити підрозділ
+                        </button>
+                    </div>
                 )}
             </div>
 
             <div className="subdivision_content">
-                {/* 1. Якщо підрозділ порожній — виводимо кнопки для першого елемента */}
-                {isEditMode && items.length === 0 && (
+                {isEditMode && (
                     <div className="action_buttons_group">
                         <button
                             type="button"
@@ -53,7 +64,6 @@ export default function SubdivisionNode({
                     </div>
                 )}
 
-                {/* 2. Якщо підрозділ містить елементи — виводимо кожен елемент і кнопки ПІСЛЯ нього */}
                 {items.map((item, index) => {
                     let renderedNode = null;
 
@@ -69,6 +79,7 @@ export default function SubdivisionNode({
                                     isEditMode={isEditMode}
                                     onAssignClick={onAssignClick}
                                     onUnassignClick={onUnassignClick}
+                                    onEditPosition={onEditPosition}
                                     onDeletePosition={onDeletePosition}
                                 />
                             );
@@ -87,7 +98,9 @@ export default function SubdivisionNode({
                                     onOpenAddModal={onOpenAddModal}
                                     onAssignClick={onAssignClick}
                                     onUnassignClick={onUnassignClick}
+                                    onEditPosition={onEditPosition}
                                     onDeletePosition={onDeletePosition}
+                                    onEditSubdivision={onEditSubdivision}
                                     onDeleteSubdivision={onDeleteSubdivision}
                                 />
                             );
@@ -98,7 +111,6 @@ export default function SubdivisionNode({
                         <React.Fragment key={item.itemId || index}>
                             {renderedNode}
 
-                            {/* Кнопки вставки строго після кожного елемента */}
                             {isEditMode && (
                                 <div className="action_buttons_group">
                                     <button

@@ -27,8 +27,9 @@ export default function Tree() {
     // Режим редагування
     const [isEditMode, setIsEditMode] = useState(false);
 
-    // Модалки додавання (+p / +s)
+    // Модалки додавання/редагування (+p / +s)
     const [modalType, setModalType] = useState(null);
+    const [editingId, setEditingId] = useState(null);
     const [targetParentId, setTargetParentId] = useState(null);
     const [insertIndex, setInsertIndex] = useState(null);
 
@@ -79,7 +80,9 @@ export default function Tree() {
         (p) => !p.treeNodeId || p.treeNodeId === 'none'
     );
 
+    // Відкриття модалок створення
     const handleOpenAddModal = (type, parentId = null, index = null) => {
+        setEditingId(null);
         setModalType(type);
         setTargetParentId(parentId);
         setInsertIndex(index);
@@ -87,17 +90,47 @@ export default function Tree() {
         setPosForm(INITIAL_POSITION_FORM);
     };
 
+    // Відкриття модалки редагування підрозділу
+    const handleOpenEditSubdivision = (sub) => {
+        setEditingId(sub._id);
+        setSubForm({
+            title: sub.title || '',
+            fullTitle: sub.fullTitle || '',
+            shortTitle: sub.shortTitle || '',
+        });
+        setModalType('subdivision');
+    };
+
+    // Відкриття модалки редагування посади
+    const handleOpenEditPosition = (pos) => {
+        setEditingId(pos._id);
+        setPosForm({
+            treeNodeId: pos.treeNodeId || '',
+            shortTitle: pos.shortTitle || '',
+            fullTitle: pos.fullTitle || '',
+            rank: pos.rank || '',
+            specialtyCode: pos.specialtyCode || '',
+            tariff: pos.tariff || '',
+        });
+        setModalType('position');
+    };
+
     const handleCloseAddModal = () => {
         setModalType(null);
+        setEditingId(null);
         setTargetParentId(null);
         setInsertIndex(null);
     };
 
-    const handleCreateSubdivision = async (e) => {
+    // Збереження підрозділу (Створення або Оновлення)
+    const handleSaveSubdivision = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('/api/structure/subdivision', {
-                method: 'POST',
+            const url = editingId ? `/api/structure/subdivision/${editingId}` : '/api/structure/subdivision';
+            const method = editingId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...subForm,
@@ -105,10 +138,12 @@ export default function Tree() {
                     insertIndex,
                 }),
             });
+
             if (!res.ok) {
                 const data = await res.json();
-                throw new Error(data.message || 'Помилка створення підрозділу');
+                throw new Error(data.message || 'Помилка збереження підрозділу');
             }
+
             handleCloseAddModal();
             fetchStructure();
         } catch (err) {
@@ -116,11 +151,15 @@ export default function Tree() {
         }
     };
 
-    const handleCreatePosition = async (e) => {
+    // Збереження посади (Створення або Оновлення)
+    const handleSavePosition = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('/api/structure/position', {
-                method: 'POST',
+            const url = editingId ? `/api/structure/position/${editingId}` : '/api/structure/position';
+            const method = editingId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...posForm,
@@ -128,10 +167,12 @@ export default function Tree() {
                     insertIndex,
                 }),
             });
+
             if (!res.ok) {
                 const data = await res.json();
-                throw new Error(data.message || 'Помилка створення посади');
+                throw new Error(data.message || 'Помилка збереження посади');
             }
+
             handleCloseAddModal();
             fetchStructure();
         } catch (err) {
@@ -151,7 +192,7 @@ export default function Tree() {
         }
     };
 
-    // Видалення підрозділу (і всього вкладеного)
+    // Видалення підрозділу
     const handleDeleteSubdivision = async (id, title) => {
         if (!window.confirm(`Ви дійсно бажаєте видалити підрозділ "${title}" та ВСІ вкладені підрозділи й посади?`)) return;
         try {
@@ -211,7 +252,6 @@ export default function Tree() {
 
     return (
         <div className="tree_container">
-            {/* Верхня панель з заголовком і перемикачем режиму редагування */}
             <div className="tree_top_bar">
                 <h2>Організаційна структура</h2>
                 <button
@@ -226,99 +266,75 @@ export default function Tree() {
             {error && <div className="error_message">{error}</div>}
 
             <div className="tree_workspace">
-                {/* Якщо кореневий рівень порожній */}
-                {isEditMode && rootItems.length === 0 && (
+                {rootItems.map((item) => {
+                    if (item.kind === 'position') {
+                        const pos = positionsMap[item.itemId];
+                        if (!pos) return null;
+                        return (
+                            <PositionNode
+                                key={pos._id}
+                                position={pos}
+                                person={personsByNodeId[pos.treeNodeId]}
+                                isEditMode={isEditMode}
+                                onAssignClick={handleOpenAssign}
+                                onUnassignClick={handleUnassignPerson}
+                                onEditPosition={handleOpenEditPosition}
+                                onDeletePosition={handleDeletePosition}
+                            />
+                        );
+                    }
+
+                    if (item.kind === 'subdivision') {
+                        const sub = subdivisionsMap[item.itemId];
+                        if (!sub) return null;
+                        return (
+                            <SubdivisionNode
+                                key={sub._id}
+                                subdivision={sub}
+                                subdivisionsMap={subdivisionsMap}
+                                positionsMap={positionsMap}
+                                personsByNodeId={personsByNodeId}
+                                isEditMode={isEditMode}
+                                onOpenAddModal={handleOpenAddModal}
+                                onAssignClick={handleOpenAssign}
+                                onUnassignClick={handleUnassignPerson}
+                                onEditPosition={handleOpenEditPosition}
+                                onDeletePosition={handleDeletePosition}
+                                onEditSubdivision={handleOpenEditSubdivision}
+                                onDeleteSubdivision={handleDeleteSubdivision}
+                            />
+                        );
+                    }
+
+                    return null;
+                })}
+
+                {/* ЄДИНИЙ блок кнопок для кореневого рівня у самому низу */}
+                {isEditMode && (
                     <div className="action_buttons_group">
                         <button
                             type="button"
                             className="btn_tree_action"
-                            onClick={() => handleOpenAddModal('position', null, -1)}
+                            onClick={() => handleOpenAddModal('position', null)}
                         >
                             Додати посаду
                         </button>
                         <button
                             type="button"
                             className="btn_tree_action"
-                            onClick={() => handleOpenAddModal('subdivision', null, -1)}
+                            onClick={() => handleOpenAddModal('subdivision', null)}
                         >
                             Додати підрозділ
                         </button>
                     </div>
                 )}
-
-                {/* Кореневі елементи з кнопками вставки після кожного з них */}
-                {rootItems.map((item, index) => {
-                    let renderedNode = null;
-
-                    if (item.kind === 'position') {
-                        const pos = positionsMap[item.itemId];
-                        if (pos) {
-                            renderedNode = (
-                                <PositionNode
-                                    key={pos._id}
-                                    position={pos}
-                                    person={personsByNodeId[pos.treeNodeId]}
-                                    isEditMode={isEditMode}
-                                    onAssignClick={handleOpenAssign}
-                                    onUnassignClick={handleUnassignPerson}
-                                    onDeletePosition={handleDeletePosition}
-                                />
-                            );
-                        }
-                    } else if (item.kind === 'subdivision') {
-                        const sub = subdivisionsMap[item.itemId];
-                        if (sub) {
-                            renderedNode = (
-                                <SubdivisionNode
-                                    key={sub._id}
-                                    subdivision={sub}
-                                    subdivisionsMap={subdivisionsMap}
-                                    positionsMap={positionsMap}
-                                    personsByNodeId={personsByNodeId}
-                                    isEditMode={isEditMode}
-                                    onOpenAddModal={handleOpenAddModal}
-                                    onAssignClick={handleOpenAssign}
-                                    onUnassignClick={handleUnassignPerson}
-                                    onDeletePosition={handleDeletePosition}
-                                    onDeleteSubdivision={handleDeleteSubdivision}
-                                />
-                            );
-                        }
-                    }
-
-                    return (
-                        <React.Fragment key={item.itemId || index}>
-                            {renderedNode}
-
-                            {/* Кнопки вставки строго після кожного кореневого елемента */}
-                            {isEditMode && (
-                                <div className="action_buttons_group">
-                                    <button
-                                        type="button"
-                                        className="btn_tree_action"
-                                        onClick={() => handleOpenAddModal('position', null, index)}
-                                    >
-                                        Додати посаду
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn_tree_action"
-                                        onClick={() => handleOpenAddModal('subdivision', null, index)}
-                                    >
-                                        Додати підрозділ
-                                    </button>
-                                </div>
-                            )}
-                        </React.Fragment>
-                    );
-                })}
             </div>
 
-            {/* Модальне вікно створення підрозділу */}
+            {/* Модальне вікно підрозділу (створення / редагування) */}
             <Modal open={modalType === 'subdivision'} onClose={handleCloseAddModal}>
                 <div className="modal_content">
-                    <form onSubmit={handleCreateSubdivision} className="property_form">
-                        <h3>Створити новий підрозділ</h3>
+                    <form onSubmit={handleSaveSubdivision} className="property_form">
+                        <h3>{editingId ? 'Редагувати підрозділ' : 'Створити новий підрозділ'}</h3>
                         <div className="form_group">
                             <label>Звичайна назва:*</label>
                             <input
@@ -347,18 +363,22 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_actions">
-                            <button type="submit" className="btn_primary">Створити</button>
-                            <button type="button" onClick={handleCloseAddModal} className="btn_secondary">Скасувати</button>
+                            <button type="submit" className="btn_primary">
+                                {editingId ? 'Зберегти' : 'Створити'}
+                            </button>
+                            <button type="button" onClick={handleCloseAddModal} className="btn_secondary">
+                                Скасувати
+                            </button>
                         </div>
                     </form>
                 </div>
             </Modal>
 
-            {/* Модальне вікно створення посади */}
+            {/* Модальне вікно посади (створення / редагування) */}
             <Modal open={modalType === 'position'} onClose={handleCloseAddModal}>
                 <div className="modal_content">
-                    <form onSubmit={handleCreatePosition} className="property_form">
-                        <h3>Створити нову посаду</h3>
+                    <form onSubmit={handleSavePosition} className="property_form">
+                        <h3>{editingId ? 'Редагувати посаду' : 'Створити нову посаду'}</h3>
                         <div className="form_group">
                             <label>Номер за порядком (Tree Node ID):*</label>
                             <input
@@ -411,8 +431,12 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_actions">
-                            <button type="submit" className="btn_primary">Створити</button>
-                            <button type="button" onClick={handleCloseAddModal} className="btn_secondary">Скасувати</button>
+                            <button type="submit" className="btn_primary">
+                                {editingId ? 'Зберегти' : 'Створити'}
+                            </button>
+                            <button type="button" onClick={handleCloseAddModal} className="btn_secondary">
+                                Скасувати
+                            </button>
                         </div>
                     </form>
                 </div>
