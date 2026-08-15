@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from '@mui/material/Modal';
 import SubdivisionNode from './SubdivisionNode';
 import PositionNode from './PositionNode';
