@@ -36,6 +36,16 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET /api/persons/all — Отримати всі картки (включно з архівними)
+router.get('/all', async (req, res) => {
+    try {
+        const persons = await Person.find().sort({ lastName: 1, firstName: 1 });
+        res.json(persons);
+    } catch (err) {
+        res.status(500).json({ message: 'Помилка завантаження списку карток' });
+    }
+});
+
 // GET /api/persons/archived — отримати заархівовані картки
 router.get('/archived', async (req, res) => {
     try {
