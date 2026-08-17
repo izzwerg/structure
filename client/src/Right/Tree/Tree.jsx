@@ -4,6 +4,9 @@ import SubdivisionNode from './SubdivisionNode';
 import PositionNode from './PositionNode';
 import './Tree.css';
 import { POSITION_RANKS } from '../../constants/ranks';
+import PersonView from '../Modals/PersonView/PersonView';
+import ConfirmUnassign from './Modals/ConfirmUnassign';
+import AssignModal from './Modals/AssignModal';
 
 const INITIAL_SUBDIVISION_FORM = { title: '', fullTitle: '', shortTitle: '' };
 const INITIAL_POSITION_FORM = {
@@ -22,6 +25,7 @@ export default function Tree() {
         positions: [],
         persons: [],
     });
+    const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -42,13 +46,30 @@ export default function Tree() {
     const [selectedPositionNodeId, setSelectedPositionNodeId] = useState(null);
     const [selectedPersonId, setSelectedPersonId] = useState('');
 
+    // Модальне вікно перегляду картки особи
+    const [viewPersonOpen, setViewPersonOpen] = useState(false);
+    const [personToView, setPersonToView] = useState(null);
+
+    const [unassignModalOpen, setUnassignModalOpen] = useState(false);
+    const [personToUnassign, setPersonToUnassign] = useState(null);
+
     const fetchStructure = async () => {
         try {
             setLoading(true);
-            const res = await fetch('/api/structure');
-            if (!res.ok) throw new Error('Помилка завантаження структури');
-            const data = await res.json();
+            const [resStructure, resProps] = await Promise.all([
+                fetch('/api/structure'),
+                fetch('/api/properties'),
+            ]);
+
+            if (!resStructure.ok || !resProps.ok) {
+                throw new Error('Помилка завантаження даних');
+            }
+
+            const data = await resStructure.json();
+            const propsData = await resProps.json();
+
             setStructureData(data);
+            setProperties(propsData.filter((p) => p.is_active));
         } catch (err) {
             setError(err.message);
         } finally {
@@ -59,6 +80,48 @@ export default function Tree() {
     useEffect(() => {
         fetchStructure();
     }, []);
+
+    // Хендлер відкриття модалки підтвердження зняття
+    const handleOpenUnassignConfirm = (person) => {
+        setPersonToUnassign(person);
+        setUnassignModalOpen(true);
+    };
+
+    const handleCloseUnassignConfirm = () => {
+        setUnassignModalOpen(false);
+        setPersonToUnassign(null);
+    };
+
+    // Підтверджене зняття з посади
+    const handleConfirmUnassign = async () => {
+        if (!personToUnassign) return;
+
+        try {
+            const res = await fetch('/api/structure/assign-person', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ personId: personToUnassign._id, treeNodeId: 'none' }),
+            });
+
+            if (!res.ok) throw new Error('Помилка зняття з посади');
+
+            handleCloseUnassignConfirm();
+            fetchStructure();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    // Хендлери перегляду особи
+    const handleOpenViewPerson = (person) => {
+        setPersonToView(person);
+        setViewPersonOpen(true);
+    };
+
+    const handleCloseViewPerson = () => {
+        setViewPersonOpen(false);
+        setPersonToView(null);
+    };
 
     const subdivisionsMap = structureData.subdivisions.reduce((acc, item) => {
         acc[item._id] = item;
@@ -233,20 +296,6 @@ export default function Tree() {
         }
     };
 
-    const handleUnassignPerson = async (personId) => {
-        try {
-            const res = await fetch('/api/structure/assign-person', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ personId, treeNodeId: 'none' }),
-            });
-            if (!res.ok) throw new Error('Помилка зняття з посади');
-            fetchStructure();
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
     if (loading) return <div className="tree_container">Завантаження...</div>;
 
     const rootItems = structureData.rootItems || [];
@@ -278,7 +327,8 @@ export default function Tree() {
                                 person={personsByNodeId[pos.treeNodeId]}
                                 isEditMode={isEditMode}
                                 onAssignClick={handleOpenAssign}
-                                onUnassignClick={handleUnassignPerson}
+                                onUnassignClick={handleOpenUnassignConfirm}
+                                onViewPerson={handleOpenViewPerson}
                                 onEditPosition={handleOpenEditPosition}
                                 onDeletePosition={handleDeletePosition}
                             />
@@ -298,7 +348,8 @@ export default function Tree() {
                                 isEditMode={isEditMode}
                                 onOpenAddModal={handleOpenAddModal}
                                 onAssignClick={handleOpenAssign}
-                                onUnassignClick={handleUnassignPerson}
+                                onUnassignClick={handleOpenUnassignConfirm}
+                                onViewPerson={handleOpenViewPerson}
                                 onEditPosition={handleOpenEditPosition}
                                 onDeletePosition={handleDeletePosition}
                                 onEditSubdivision={handleOpenEditSubdivision}
@@ -450,48 +501,29 @@ export default function Tree() {
             </Modal>
 
             {/* Модальне вікно призначення людини */}
-            <Modal open={assignModalOpen} onClose={() => setAssignModalOpen(false)}>
-                <div className="modal_content">
-                    <form onSubmit={handleConfirmAssign} className="property_form">
-                        <h3>Призначити особу на посаду (ID: {selectedPositionNodeId})</h3>
-                        <div className="form_group">
-                            <label>Оберіть особу зі списку (Tree Node ID = none):</label>
-                            {unassignedPersons.length === 0 ? (
-                                <p>Вільні картки відсутні.</p>
-                            ) : (
-                                <select
-                                    value={selectedPersonId}
-                                    onChange={(e) => setSelectedPersonId(e.target.value)}
-                                    required
-                                >
-                                    <option value="">-- Оберіть картку --</option>
-                                    {unassignedPersons.map((p) => (
-                                        <option key={p._id} value={p._id}>
-                                            {`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}
-                                        </option>
-                                    ))}
-                                </select>
-                            )}
-                        </div>
-                        <div className="form_actions">
-                            <button
-                                type="submit"
-                                className="btn_primary"
-                                disabled={unassignedPersons.length === 0}
-                            >
-                                Призначити
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setAssignModalOpen(false)}
-                                className="btn_secondary"
-                            >
-                                Скасувати
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
+            <AssignModal
+                assignModalOpen={assignModalOpen}
+                setAssignModalOpen={setAssignModalOpen}
+                handleConfirmAssign={handleConfirmAssign}
+                selectedPositionNodeId={selectedPositionNodeId}
+                unassignedPersons={unassignedPersons}
+                selectedPersonId={selectedPersonId}
+                setSelectedPersonId={setSelectedPersonId}
+            />
+            {/* Модальне вікно перегляду картки особи */}
+            <PersonView
+                open={viewPersonOpen}
+                onClose={handleCloseViewPerson}
+                person={personToView}
+                properties={properties}
+            />
+            {/* Модальне вікно підтвердження зняття з посади */}
+            <ConfirmUnassign
+                unassignModalOpen={unassignModalOpen}
+                handleCloseUnassignConfirm={handleCloseUnassignConfirm}
+                personToUnassign={personToUnassign}
+                handleConfirmUnassign={handleConfirmUnassign}
+            />
         </div>
     );
 }

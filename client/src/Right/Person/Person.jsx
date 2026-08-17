@@ -9,6 +9,7 @@ const INITIAL_PERSON_STATE = {
     firstName: '',
     middleName: '',
     rank: '',
+    position: '',
     gender: 'M',
     extraData: {},
 };

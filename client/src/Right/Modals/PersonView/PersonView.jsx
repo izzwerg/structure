@@ -36,6 +36,8 @@ const PersonView = ({ open, onClose, person, properties }) => {
                             {`${person.rank ? `${person.rank} ` : ''}${person.lastName} ${person.firstName} ${person.middleName}`.trim()}
                         </h3>
 
+                        <h4>{person.position || 'Позиція не вказана'}</h4>
+
                         <div className="view_section">
                             <h4>Основні дані</h4>
                             <p><strong>Стать:</strong> {person.gender === 'M' ? 'Чоловіча' : 'Жіноча'}</p>

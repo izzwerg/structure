@@ -11,6 +11,7 @@ export default function SubdivisionNode({
     onOpenAddModal,
     onAssignClick,
     onUnassignClick,
+    onViewPerson,
     onEditPosition,
     onDeletePosition,
     onEditSubdivision,
@@ -45,25 +46,6 @@ export default function SubdivisionNode({
             </div>
 
             <div className="subdivision_content">
-                {isEditMode && (
-                    <div className="action_buttons_group">
-                        <button
-                            type="button"
-                            className="btn_tree_action"
-                            onClick={() => onOpenAddModal('position', subdivision._id, -1)}
-                        >
-                            Додати посаду
-                        </button>
-                        <button
-                            type="button"
-                            className="btn_tree_action"
-                            onClick={() => onOpenAddModal('subdivision', subdivision._id, -1)}
-                        >
-                            Додати підрозділ
-                        </button>
-                    </div>
-                )}
-
                 {items.map((item, index) => {
                     let renderedNode = null;
 
@@ -79,6 +61,7 @@ export default function SubdivisionNode({
                                     isEditMode={isEditMode}
                                     onAssignClick={onAssignClick}
                                     onUnassignClick={onUnassignClick}
+                                    onViewPerson={onViewPerson}
                                     onEditPosition={onEditPosition}
                                     onDeletePosition={onDeletePosition}
                                 />
@@ -98,6 +81,7 @@ export default function SubdivisionNode({
                                     onOpenAddModal={onOpenAddModal}
                                     onAssignClick={onAssignClick}
                                     onUnassignClick={onUnassignClick}
+                                    onViewPerson={onViewPerson}
                                     onEditPosition={onEditPosition}
                                     onDeletePosition={onDeletePosition}
                                     onEditSubdivision={onEditSubdivision}

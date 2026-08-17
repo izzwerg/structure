@@ -121,11 +121,25 @@ router.post('/position', async (req, res) => {
 router.post('/assign-person', async (req, res) => {
     try {
         const { personId, treeNodeId } = req.body;
+
+        let positionTitle = '';
+
+        if (treeNodeId && treeNodeId !== 'none') {
+            const position = await Position.findOne({ treeNodeId });
+            if (position) {
+                positionTitle = position.fullTitle || position.shortTitle;
+            }
+        }
+
         const person = await Person.findByIdAndUpdate(
             personId,
-            { treeNodeId },
+            {
+                treeNodeId: treeNodeId || 'none',
+                position: positionTitle,
+            },
             { returnDocument: 'after' }
         );
+
         res.json(person);
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -140,7 +154,7 @@ router.delete('/position/:id', async (req, res) => {
         if (!position) return res.status(404).json({ message: 'Посаду не знайдено' });
 
         // Очищаємо Tree Node ID у прив'язаної людини (скидаємо на 'none')
-        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: 'none' });
+        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: 'none', position: '' });
 
         // Видаляємо посилання з батьківського підрозділу чи кореня
         await Subdivision.updateMany({}, { $pull: { items: { itemId: posId } } });
@@ -192,7 +206,7 @@ router.delete('/subdivision/:id', async (req, res) => {
         if (treeNodeIdsToReset.length > 0) {
             await Person.updateMany(
                 { treeNodeId: { $in: treeNodeIdsToReset } },
-                { treeNodeId: 'none' }
+                { treeNodeId: 'none', position: '' }
             );
         }
 

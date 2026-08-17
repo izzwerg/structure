@@ -6,6 +6,7 @@ export default function PositionNode({
     isEditMode,
     onAssignClick,
     onUnassignClick,
+    onViewPerson,
     onEditPosition,
     onDeletePosition,
 }) {
@@ -23,9 +24,17 @@ export default function PositionNode({
                             <span>{`${person.lastName} ${person.firstName[0]}. ${person.middleName ? person.middleName[0] + '.' : ''}`}</span>
                             <button
                                 type="button"
+                                className="btn_view_person"
+                                title="Переглянути картку особи"
+                                onClick={() => onViewPerson(person)}
+                            >
+                                Перегляд
+                            </button>
+                            <button
+                                type="button"
                                 className="btn_unassign"
                                 title="Зняти з посади"
-                                onClick={() => onUnassignClick(person._id)}
+                                onClick={() => onUnassignClick(person)}
                             >
                                 ×
                             </button>

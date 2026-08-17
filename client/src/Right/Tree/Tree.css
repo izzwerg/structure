@@ -159,3 +159,17 @@
 .btn_tree_action:hover {
     background: #e2e2e2;
 }
+
+.btn_view_person {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+    background-color: #17a2b8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn_view_person:hover {
+    background-color: #138496;
+}

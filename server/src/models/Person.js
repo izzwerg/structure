@@ -28,6 +28,11 @@ const personSchema = new mongoose.Schema({
         default: '',
         trim: true,
     },
+    position: {
+        type: String,
+        default: '',
+        trim: true,
+    },
     treeNodeId: {
         type: String,
         default: 'none',
