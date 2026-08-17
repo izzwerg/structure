@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './PersonModel.css';
 import ModelEdit from './Modals/ModelEdit';
 import CatCreate from './Modals/CatCreate';
+import BackupModal from '../Modals/BackupModal/BackupModal';
 
 
 const INITIAL_FORM_STATE = {
@@ -19,6 +20,7 @@ export default function PersonModel() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [backupModalOpen, setBackupModalOpen] = useState(false);
 
     // Форма властивості
     const [editingId, setEditingId] = useState(null);
@@ -223,6 +225,9 @@ export default function PersonModel() {
                 <button onClick={() => setCategoryModalOpen(true)} className="btn_secondary">
                     Управління категоріями
                 </button>
+                <button onClick={() => setBackupModalOpen(true)} className="btn_secondary">
+                    Резервне копіювання
+                </button>
             </div>
 
             {/* Список властивостей, відсортований за порядком категорій */}
@@ -342,6 +347,12 @@ export default function PersonModel() {
                 categories={categories}
                 handleMoveCategory={handleMoveCategory}
                 handleDeleteCategory={handleDeleteCategory}
+            />
+            {/* Модальне вікно бекапу */}
+            <BackupModal
+                open={backupModalOpen}
+                onClose={() => setBackupModalOpen(false)}
+                onRestoreSuccess={() => fetchData()} // Перезавантажує дані на сторінці після відновлення
             />
         </div>
     );
