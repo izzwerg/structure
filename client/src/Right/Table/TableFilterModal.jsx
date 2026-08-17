@@ -105,17 +105,31 @@ export default function TableFilterModal({
                                 <td>—</td>
                                 <td>
                                     <select
-                                        value={filterState.sort.key === 'fullName' ? filterState.sort.dir : ''}
-                                        onChange={(e) =>
-                                            setFilterState({
-                                                ...filterState,
-                                                sort: { key: e.target.value ? 'fullName' : null, dir: e.target.value },
-                                            })
+                                        value={
+                                            filterState.sort.key === 'fullName'
+                                                ? filterState.sort.dir
+                                                : filterState.sort.key === 'createdAt'
+                                                    ? `created_${filterState.sort.dir}`
+                                                    : ''
                                         }
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (!val) {
+                                                setFilterState({ ...filterState, sort: { key: null, dir: null } });
+                                            } else if (val === 'asc' || val === 'desc') {
+                                                setFilterState({ ...filterState, sort: { key: 'fullName', dir: val } });
+                                            } else if (val === 'created_asc') {
+                                                setFilterState({ ...filterState, sort: { key: 'createdAt', dir: 'asc' } });
+                                            } else if (val === 'created_desc') {
+                                                setFilterState({ ...filterState, sort: { key: 'createdAt', dir: 'desc' } });
+                                            }
+                                        }}
                                     >
                                         <option value="">За замовчуванням (Дерево)</option>
-                                        <option value="asc">А-Я (Зростання)</option>
-                                        <option value="desc">Я-А (Спадання)</option>
+                                        <option value="asc">ПІБ: А-Я (Зростання)</option>
+                                        <option value="desc">ПІБ: Я-А (Спадання)</option>
+                                        <option value="created_asc">Дата додавання: зростання (спочатку давніші)</option>
+                                        <option value="created_desc">Дата додавання: спадання (спочатку новіші)</option>
                                     </select>
                                 </td>
                             </tr>

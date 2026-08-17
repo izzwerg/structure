@@ -160,6 +160,13 @@ export default function Table() {
 
         if (sortKey && sortDir) {
             result.sort((a, b) => {
+                // Окрема обробка для дати створення
+                if (sortKey === 'createdAt') {
+                    const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                    const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    return sortDir === 'asc' ? timeA - timeB : timeB - timeA;
+                }
+
                 let valA, valB;
 
                 if (sortKey === 'fullName') {
@@ -181,7 +188,7 @@ export default function Table() {
                 return sortDir === 'asc' ? cmp : -cmp;
             });
         } else {
-            // За замовчуванням — порядок як у Tree.jsx, потім решта карток
+            // За замовчуванням — порядок за структурою дерева
             result.sort((a, b) => {
                 const idxA = treeIndexMap[a.treeNodeId] ?? 999999;
                 const idxB = treeIndexMap[b.treeNodeId] ?? 999999;
