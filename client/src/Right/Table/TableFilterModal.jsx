@@ -78,9 +78,9 @@ export default function TableFilterModal({
                         onChange={(e) => setFilterState({ ...filterState, nameFormat: e.target.value })}
                     >
                         <option value="full">Прізвище, ім'я, по батькові повністю</option>
-                        <option value="initials">Прізвище та ініціали (Іванов І. І.)</option>
-                        <option value="full_upper">ПРІЗВИЩЕ ВЕЛИКИМИ, ім'я, по батькові повністю</option>
-                        <option value="initials_upper">ПРІЗВИЩЕ ВЕЛИКИМИ та ініціали (ІВАНОВ І. І.)</option>
+                        <option value="initials">Прізвище та ініціали</option>
+                        <option value="full_upper">ПРІЗВИЩЕ, ім'я, по батькові повністю</option>
+                        <option value="initials_upper">ПРІЗВИЩЕ та ініціали</option>
                     </select>
                 </div>
 

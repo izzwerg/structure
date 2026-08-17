@@ -218,7 +218,6 @@ export default function Table() {
         <div className="table_container">
             {/* Верхня панель дій */}
             <div className="table_top_bar">
-                <h2>Таблиця карток</h2>
                 <button
                     type="button"
                     className="btn_primary"

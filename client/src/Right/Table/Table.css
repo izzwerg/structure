@@ -3,6 +3,7 @@
     height: 100%;
     box-sizing: border-box;
     overflow-y: auto;
+    overflow-x: auto;
 }
 
 .table_top_bar {
