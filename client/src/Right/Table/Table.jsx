@@ -210,8 +210,8 @@ export default function Table() {
     ].filter((col) => {
         if (col.id === 'fullName') return true;
         const colConf = filterState.columns[col.id];
-        // Якщо для колонки ще немає налаштування у стані, за замовчуванням показуємо її (true)
-        return colConf ? colConf.show : true;
+        // За замовчуванням показуємо тільки ПІБ, інші колонки — за прапорцем show
+        return colConf ? colConf.show : false;
     });
 
     return (

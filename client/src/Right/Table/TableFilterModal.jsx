@@ -28,7 +28,7 @@ export default function TableFilterModal({
 
     const handleColumnToggle = (colId) => {
         setFilterState((prev) => {
-            const current = prev.columns[colId] || { show: true, filterType: 'all', dateFrom: '', dateTo: '' };
+            const current = prev.columns[colId] || { show: false, filterType: 'all', dateFrom: '', dateTo: '' };
             return {
                 ...prev,
                 columns: {
@@ -41,7 +41,7 @@ export default function TableFilterModal({
 
     const handleColumnFilterChange = (colId, field, value) => {
         setFilterState((prev) => {
-            const current = prev.columns[colId] || { show: true, filterType: 'all', dateFrom: '', dateTo: '' };
+            const current = prev.columns[colId] || { show: false, filterType: 'all', dateFrom: '', dateTo: '' };
             return {
                 ...prev,
                 columns: {
@@ -122,7 +122,7 @@ export default function TableFilterModal({
 
                             {allColumns.map((col) => {
                                 const colConf = filterState.columns[col.id] || {
-                                    show: true,
+                                    show: false,
                                     filterType: 'all',
                                     dateFrom: '',
                                     dateTo: '',
