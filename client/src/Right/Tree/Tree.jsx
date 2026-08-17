@@ -3,6 +3,7 @@ import Modal from '@mui/material/Modal';
 import SubdivisionNode from './SubdivisionNode';
 import PositionNode from './PositionNode';
 import './Tree.css';
+import { POSITION_RANKS } from '../../constants/ranks';
 
 const INITIAL_SUBDIVISION_FORM = { title: '', fullTitle: '', shortTitle: '' };
 const INITIAL_POSITION_FORM = {
@@ -408,11 +409,17 @@ export default function Tree() {
                         </div>
                         <div className="form_group">
                             <label>Потрібне звання:</label>
-                            <input
-                                type="text"
+                            <select
                                 value={posForm.rank}
                                 onChange={(e) => setPosForm({ ...posForm, rank: e.target.value })}
-                            />
+                            >
+                                <option value="">-- Не обрано --</option>
+                                {POSITION_RANKS.map((rank) => (
+                                    <option key={rank} value={rank}>
+                                        {rank}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div className="form_group">
                             <label>Номер спеціальності:</label>

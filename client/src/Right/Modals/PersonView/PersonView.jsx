@@ -33,7 +33,7 @@ const PersonView = ({ open, onClose, person, properties }) => {
                 {person && (
                     <div className="view_card">
                         <h3>
-                            {`${person.lastName} ${person.firstName} ${person.middleName}`.trim()}
+                            {`${person.rank ? `${person.rank} ` : ''}${person.lastName} ${person.firstName} ${person.middleName}`.trim()}
                         </h3>
 
                         <div className="view_section">

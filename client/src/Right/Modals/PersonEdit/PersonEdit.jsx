@@ -1,4 +1,5 @@
 import Modal from '@mui/material/Modal';
+import { PERSON_RANKS } from '../../../constants/ranks';
 
 const groupPropertiesByCategory = (propsList) => {
     return propsList.reduce((acc, prop) => {
@@ -132,6 +133,22 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
                             <select name="gender" value={formData.gender} onChange={handleMainChange}>
                                 <option value="M">Чоловіча (M)</option>
                                 <option value="F">Жіноча (F)</option>
+                            </select>
+                        </div>
+
+                        <div className="form_group">
+                            <label>Військове звання:</label>
+                            <select
+                                name="rank"
+                                value={formData.rank || ''}
+                                onChange={handleMainChange}
+                            >
+                                <option value="">-- Не обрано --</option>
+                                {PERSON_RANKS.map((rank) => (
+                                    <option key={rank} value={rank}>
+                                        {rank}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
