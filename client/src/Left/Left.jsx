@@ -1,8 +1,11 @@
 import './Left.css'
 import clsx from 'clsx';
+import { useAuth } from '../context/AuthContext';
 
 
 function Left({ isNavOpen, setIsNavOpen, page, setPage, handleLogout }) {
+
+    const { canMod } = useAuth();
 
     function handleNavClick() {
         setIsNavOpen(!isNavOpen);
@@ -35,10 +38,10 @@ function Left({ isNavOpen, setIsNavOpen, page, setPage, handleLogout }) {
                 </div>
             </div>
             <div className='nav_buttons_container'>
-                <div className={clsx('nav_btn pointer', { 'active': page === 'person_model' })} onClick={() => setPage('person_model')}>
+                {canMod && <div className={clsx('nav_btn pointer', { 'active': page === 'person_model' })} onClick={() => setPage('person_model')}>
                     <img src="gear.svg" alt="person" className='nav_btn_logo' />
                     <span className='nav_btn_text'>MODEL</span>
-                </div>
+                </div>}
                 <button onClick={handleLogout} className='logout_btn pointer'>
                     <img src="mono-logout.svg" alt="person" className='nav_btn_logo' />
                 </button>

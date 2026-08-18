@@ -1,4 +1,5 @@
 import './Tree.css';
+import { useAuth } from '../../context/AuthContext';
 
 export default function PositionNode({
     position,
@@ -10,6 +11,7 @@ export default function PositionNode({
     onEditPosition,
     onDeletePosition,
 }) {
+    const { canEdit } = useAuth();
     return (
         <div className="position_node">
             <div className="position_info">
@@ -30,23 +32,25 @@ export default function PositionNode({
                             >
                                 Перегляд
                             </button>
-                            <button
+                            {canEdit && <button
                                 type="button"
                                 className="btn_unassign"
                                 title="Зняти з посади"
                                 onClick={() => onUnassignClick(person)}
                             >
                                 ×
-                            </button>
+                            </button>}
                         </div>
                     ) : (
-                        <button
-                            type="button"
-                            className="btn_assign"
-                            onClick={() => onAssignClick(position.treeNodeId)}
-                        >
-                            + Особа
-                        </button>
+                        <div className="unassigned">
+                            {canEdit && <button
+                                type="button"
+                                className="btn_assign"
+                                onClick={() => onAssignClick(position.treeNodeId)}
+                            >
+                                + Особа
+                            </button>}
+                        </div>
                     )}
                 </div>
 
@@ -71,6 +75,6 @@ export default function PositionNode({
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

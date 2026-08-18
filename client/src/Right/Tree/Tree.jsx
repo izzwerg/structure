@@ -7,6 +7,7 @@ import { POSITION_RANKS } from '../../constants/ranks';
 import PersonView from '../Modals/PersonView/PersonView';
 import ConfirmUnassign from './Modals/ConfirmUnassign';
 import AssignModal from './Modals/AssignModal';
+import { useAuth } from '../../context/AuthContext';
 
 const INITIAL_SUBDIVISION_FORM = { title: '', fullTitle: '', shortTitle: '' };
 const INITIAL_POSITION_FORM = {
@@ -19,6 +20,7 @@ const INITIAL_POSITION_FORM = {
 };
 
 export default function Tree() {
+    const { canMod } = useAuth();
     const [structureData, setStructureData] = useState({
         rootItems: [],
         subdivisions: [],
@@ -304,13 +306,13 @@ export default function Tree() {
         <div className="tree_container">
             <div className="tree_top_bar">
                 <h2>Організаційна структура</h2>
-                <button
+                {canMod && <button
                     type="button"
                     className={`btn_toggle_edit ${isEditMode ? 'active' : ''}`}
                     onClick={() => setIsEditMode(!isEditMode)}
                 >
                     {isEditMode ? 'Режим редагування: УВІМКНЕНО' : 'Режим редагування: ВИМКНЕНО'}
-                </button>
+                </button>}
             </div>
 
             {error && <div className="error_message">{error}</div>}
