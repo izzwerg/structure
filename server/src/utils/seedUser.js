@@ -5,7 +5,7 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 const User = require('../models/User');
 
 async function seed() {
-  const [,, login, password, name] = process.argv;
+  const [, , login, password, name] = process.argv;
 
   if (!login || !password) {
     console.log('do next: node src/utils/seedUser.js <login> <password> [name]');
@@ -14,7 +14,7 @@ async function seed() {
 
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    
+
     const existingUser = await User.findOne({ login: login.toLowerCase() });
     if (existingUser) {
       console.log(`Користувач з логіном "${login}" вже існує.`);
@@ -26,6 +26,7 @@ async function seed() {
       login: login.toLowerCase(),
       passwordHash,
       name: name || login,
+      role: 'admin', // Set the role to 'admin' for the seeded user
     });
 
     console.log(`Користувача "${login}" успішно створено!`);

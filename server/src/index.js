@@ -23,6 +23,7 @@ app.use('/api/persons', personRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/structure', require('./routes/structure'));
 app.use('/api/backup', require('./routes/backup'));
+app.use('/api/users', require('./routes/users'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {

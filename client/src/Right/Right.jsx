@@ -4,15 +4,17 @@ import './Right.css'
 import Table from './Table/Table';
 import Tree from './Tree/Tree';
 import Archive from './Archive/Archive';
+import { useAuth } from '../context/AuthContext';
 
 
 function Right({ page }) {
+    const { canMod } = useAuth();
     return (
         <div className='right_container'>
             {page === 'tree' && <Tree />}
             {page === 'table' && <Table />}
             {page === 'person' && <Person />}
-            {page === 'person_model' && <PersonModel />}
+            {canMod && page === 'person_model' && <PersonModel />}
             {page === 'person_archive' && <Archive />}
         </div>
     )

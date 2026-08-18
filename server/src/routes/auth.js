@@ -49,8 +49,17 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Успішний вихід' });
 });
 
-router.get('/me', authMiddleware, (req, res) => {
-  res.json({ user: req.user });
+// GET /api/auth/me — Повертає дані поточного авторизованого користувача
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id, '-passwordHash');
+    if (!user) {
+      return res.status(404).json({ message: 'Користувача не знайдено' });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

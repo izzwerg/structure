@@ -3,6 +3,8 @@ import './PersonModel.css';
 import ModelEdit from './Modals/ModelEdit';
 import CatCreate from './Modals/CatCreate';
 import BackupModal from '../Modals/BackupModal/BackupModal';
+import { useAuth } from '../../context/AuthContext';
+import UserManagementModal from '../Modals/UserManagementModal';
 
 
 const INITIAL_FORM_STATE = {
@@ -21,6 +23,9 @@ export default function PersonModel() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [backupModalOpen, setBackupModalOpen] = useState(false);
+
+    const { isAdmin } = useAuth();
+    const [userModalOpen, setUserModalOpen] = useState(false);
 
     // Форма властивості
     const [editingId, setEditingId] = useState(null);
@@ -228,6 +233,15 @@ export default function PersonModel() {
                 <button onClick={() => setBackupModalOpen(true)} className="btn_secondary">
                     Резервне копіювання
                 </button>
+                {isAdmin && (
+                    <button
+                        onClick={() => setUserModalOpen(true)}
+                        className="btn_primary"
+                        style={{ backgroundColor: '#28a745' }}
+                    >
+                        Управління користувачами
+                    </button>
+                )}
             </div>
 
             {/* Список властивостей, відсортований за порядком категорій */}
@@ -354,6 +368,12 @@ export default function PersonModel() {
                 onClose={() => setBackupModalOpen(false)}
                 onRestoreSuccess={() => fetchData()} // Перезавантажує дані на сторінці після відновлення
             />
+            {isAdmin && (
+                <UserManagementModal
+                    open={userModalOpen}
+                    onClose={() => setUserModalOpen(false)}
+                />
+            )}
         </div>
     );
 }
