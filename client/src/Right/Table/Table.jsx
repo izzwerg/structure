@@ -227,7 +227,7 @@ export default function Table() {
             <div className="table_top_bar">
                 <button
                     type="button"
-                    className="btn_primary"
+                    className="btn_table_filter"
                     onClick={() => setFilterModalOpen(true)}
                 >
                     Фільтри та колонки
