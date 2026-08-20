@@ -63,7 +63,7 @@ export default function UserManagementModal({ open, onClose }) {
                             className="btn_primary"
                             onClick={() => setCreateUserOpen(true)}
                         >
-                            + Додати користувача
+                            <img src="user-plus.svg" alt="Додати користувача" className="icon" />
                         </button>
                     </div>
 

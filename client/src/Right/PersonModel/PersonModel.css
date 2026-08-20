@@ -10,4 +10,9 @@
     width: fit-content;
     max-width: 90%;
     text-align: center;
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
 }
