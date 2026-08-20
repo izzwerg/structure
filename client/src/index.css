@@ -108,9 +108,6 @@ body {
 
 button {
   cursor: pointer;
-}
-
-.btn_primary {
   background-color: olive;
   display: flex;
   align-items: center;
