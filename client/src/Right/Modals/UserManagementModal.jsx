@@ -26,20 +26,6 @@ export default function UserManagementModal({ open, onClose }) {
         if (open) fetchUsers();
     }, [open]);
 
-    const handleRoleChange = async (userId, newRole) => {
-        try {
-            const res = await fetch(`/api/users/${userId}/role`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role: newRole }),
-            });
-            if (!res.ok) throw new Error('Помилка зміни ролі');
-            fetchUsers();
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
     const handleDeleteUser = async (userId, userName) => {
         if (!window.confirm(`Ви дійсно бажаєте видалити користувача "${userName}"?`)) return;
         try {
@@ -86,17 +72,7 @@ export default function UserManagementModal({ open, onClose }) {
                                     <tr key={u._id} style={{ borderBottom: '1px solid #eee' }}>
                                         <td style={{ padding: '0.5rem' }}><strong>{u.name}</strong></td>
                                         <td style={{ padding: '0.5rem', color: '#555' }}><code>{u.login}</code></td>
-                                        <td style={{ padding: '0.5rem' }}>
-                                            <select
-                                                value={u.role}
-                                                onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                                            >
-                                                <option value="viewer">Переглядач</option>
-                                                <option value="editor">Редактор</option>
-                                                <option value="admin">Адміністратор</option>
-                                                <option value="moderator">Модератор</option>
-                                            </select>
-                                        </td>
+                                        <td style={{ padding: '0.5rem' }}><strong>{u.role}</strong></td>
                                         <td style={{ padding: '0.5rem' }}>
                                             <button
                                                 type="button"
