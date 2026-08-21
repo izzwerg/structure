@@ -1,5 +1,7 @@
 .table_container {
-    padding: 1.5rem;
+    padding: 18px;
+    padding-right: 4px;
+    padding-bottom: 4px;
     height: 100%;
     box-sizing: border-box;
     overflow-y: auto;
