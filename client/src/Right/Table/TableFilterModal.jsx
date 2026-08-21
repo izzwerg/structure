@@ -26,18 +26,18 @@ export default function TableFilterModal({
         })),
     ];
 
-    const handleColumnToggle = (colId) => {
-        setFilterState((prev) => {
-            const current = prev.columns[colId] || { show: false, filterType: 'all', dateFrom: '', dateTo: '' };
-            return {
-                ...prev,
-                columns: {
-                    ...prev.columns,
-                    [colId]: { ...current, show: !current.show },
-                },
-            };
-        });
-    };
+    // const handleColumnToggle = (colId) => {
+    //     setFilterState((prev) => {
+    //         const current = prev.columns[colId] || { show: false, filterType: 'all', dateFrom: '', dateTo: '' };
+    //         return {
+    //             ...prev,
+    //             columns: {
+    //                 ...prev.columns,
+    //                 [colId]: { ...current, show: !current.show },
+    //             },
+    //         };
+    //     });
+    // };
 
     const handleColumnFilterChange = (colId, field, value) => {
         setFilterState((prev) => {
@@ -89,7 +89,7 @@ export default function TableFilterModal({
                     <h4>Колонки та фільтрація полів</h4>
 
                     <div className='filter_table_container' >
-                        <div className="filter_table_header">
+                        <div className="filter_table_header top">
                             <div className="filter_table_cell check top"></div>
                             <div className="filter_table_cell property top">Властивість</div>
                             <div className="filter_table_cell filter top">Фільтр значення</div>
