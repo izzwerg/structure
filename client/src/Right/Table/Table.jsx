@@ -203,11 +203,11 @@ export default function Table() {
 
     // Активні видимі колонки для рендерингу заголовків
     const visibleColumns = [
-        { id: 'fullName', name: 'ПІБ' },
         { id: 'rank', name: 'Звання' },
+        { id: 'fullName', name: 'ПІБ' },
+        { id: 'treeNodeId', name: '№ з/п' },
         { id: 'position', name: 'Посада' },
         { id: 'gender', name: 'Стать' },
-        { id: 'treeNodeId', name: 'Tree Node ID' },
         ...properties.map((p) => ({
             id: `extra_${p.property_id}`,
             name: p.property_name,
@@ -253,6 +253,7 @@ export default function Table() {
                             {processedPersons.map((person) => (
                                 <tr key={person._id}>
                                     {visibleColumns.map((col) => {
+
                                         if (col.id === 'fullName') {
                                             return (
                                                 <td key={col.id}>
