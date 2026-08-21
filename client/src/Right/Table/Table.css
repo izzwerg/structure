@@ -14,7 +14,9 @@
 }
 
 .table_workspace {
-    overflow-x: auto;
+    max-height: calc(100% - 42px);
+    overflow-y: auto;
+    padding-right: 8px;
 }
 
 .data_table {
@@ -32,6 +34,7 @@
     border: 1px solid #e2e8f0;
     text-align: left;
     font-size: 0.9rem;
+    min-width: 100px;
 }
 
 .data_table th {
