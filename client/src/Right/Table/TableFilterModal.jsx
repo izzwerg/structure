@@ -61,6 +61,7 @@ export default function TableFilterModal({
                 <div className="filter_section">
                     <h4>Статус карток</h4>
                     <select
+                        className="sort_select"
                         value={filterState.statusFilter}
                         onChange={(e) => setFilterState({ ...filterState, statusFilter: e.target.value })}
                     >
@@ -71,9 +72,10 @@ export default function TableFilterModal({
                 </div>
 
                 {/* 2. Налаштування відображення ПІБ */}
-                <div className="filter_section" style={{ marginTop: '1rem' }}>
+                <div className="filter_section" >
                     <h4>Формат відображення ПІБ</h4>
                     <select
+                        className="sort_select"
                         value={filterState.nameFormat}
                         onChange={(e) => setFilterState({ ...filterState, nameFormat: e.target.value })}
                     >
@@ -85,9 +87,7 @@ export default function TableFilterModal({
                 </div>
 
                 {/* 3. Налаштування колонок та фільтрів значень */}
-                <div className="filter_section" style={{ marginTop: '1.5rem' }}>
-                    <h4>Колонки та фільтрація полів</h4>
-
+                <div>
                     <div className='filter_table_container' >
                         <div className="filter_table_header top">
                             <div className="filter_table_cell check top"></div>

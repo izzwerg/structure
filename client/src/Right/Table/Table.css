@@ -101,12 +101,7 @@
                 height: 40px;
             }
 
-            .sort_select {
-                width: 100%;
-                padding: 4px;
-                border-radius: 4px;
-                border: 1px solid #ccc;
-            }
+
         }
 
         &.top {
@@ -116,7 +111,37 @@
     }
 
     .filter_table_body {
-        max-height: calc(100vh - 500px);
+        max-height: calc(100vh - 400px);
         overflow-y: auto;
     }
+}
+
+.sort_select {
+    width: 100%;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: olive;
+    color: #fff;
+    cursor: pointer;
+}
+
+.filter_section {
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+
+    h4 {
+        margin: 0;
+        width: 300px;
+        text-align: left;
+    }
+
+    .sort_select {
+        max-width: 200px;
+    }
+}
+
+h3 {
+    margin: 0;
 }
