@@ -33,7 +33,7 @@ function Left({ isNavOpen, setIsNavOpen, page, setPage, handleLogout }) {
                 </div>
 
                 <div className={clsx('nav_btn pointer', { 'active': page === 'person_archive' })} onClick={() => setPage('person_archive')}>
-                    <img src="person.svg" alt="person" className='nav_btn_logo' />
+                    <img src="person-archive.svg" alt="person" className='nav_btn_logo' />
                     <span className='nav_btn_text'>АРХІВ</span>
                 </div>
             </div>

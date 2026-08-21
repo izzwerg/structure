@@ -64,18 +64,18 @@
 .position_node {
     border: 2px solid #666;
     border-radius: 6px;
-    padding: 0.6rem 1rem;
+    padding: 8px 12px;
     background: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 420px;
+    /* max-width: 420px; */
 }
 
 .position_info {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 8px;
 }
 
 .position_right {
@@ -88,13 +88,22 @@
     font-family: monospace;
     font-weight: bold;
     background: #e9ecef;
-    padding: 0.2rem 0.5rem;
+    padding: 4px 8px;
     border-radius: 4px;
+    width: 50px;
 }
 
 .position_title {
     font-weight: 600;
     color: #333;
+    max-width: 350px;
+    width: 350px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    border-radius: 4px;
+    padding: 4px 8px;
+    background: #e9ecef;
 }
 
 .assigned_person {

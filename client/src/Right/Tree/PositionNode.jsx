@@ -1,5 +1,6 @@
 import './Tree.css';
 import { useAuth } from '../../context/AuthContext';
+import { Tooltip } from '@mui/material';
 
 export default function PositionNode({
     position,
@@ -15,8 +16,18 @@ export default function PositionNode({
     return (
         <div className="position_node">
             <div className="position_info">
-                <span className="position_id">{position.treeNodeId}</span>
-                <span className="position_title">{position.shortTitle}</span>
+                <Tooltip title={"Тариф: " + position.tariff} leaveDelay={200}>
+                    <span
+                        className="position_id"
+                    >{position.treeNodeId}</span>
+                </Tooltip>
+                <Tooltip title={"ШПК: " + position.rank} leaveDelay={200}>
+                    <span
+                        className="position_title"
+                    >
+                        {position.shortTitle}
+                    </span>
+                </Tooltip>
             </div>
 
             <div className="position_right">
