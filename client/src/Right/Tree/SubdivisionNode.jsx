@@ -46,6 +46,27 @@ export default function SubdivisionNode({
             </div>
 
             <div className="subdivision_content">
+                {/* ВИНЯТОК: Якщо підрозділ ПОРОЖНІЙ (items.length === 0) — виводимо кнопки первинного додавання */}
+                {isEditMode && items.length === 0 && (
+                    <div className="action_buttons_group">
+                        <button
+                            type="button"
+                            className="btn_tree_action"
+                            onClick={() => onOpenAddModal('position', subdivision._id, -1)}
+                        >
+                            Додати посаду
+                        </button>
+                        <button
+                            type="button"
+                            className="btn_tree_action"
+                            onClick={() => onOpenAddModal('subdivision', subdivision._id, -1)}
+                        >
+                            Додати підрозділ
+                        </button>
+                    </div>
+                )}
+
+                {/* Якщо підрозділ має елементи — проходимо мапом */}
                 {items.map((item, index) => {
                     let renderedNode = null;
 
