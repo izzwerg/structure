@@ -34,14 +34,14 @@ export default function PositionNode({
                 <div className="position_person">
                     {person ? (
                         <div className="assigned_person">
-                            <span>{`${person.lastName} ${person.firstName[0]}. ${person.middleName ? person.middleName[0] + '.' : ''}`}</span>
+                            <span className="person_name">{`${person.rank} ${person.lastName} ${person.firstName[0]}. ${person.middleName ? person.middleName[0] + '.' : ''}`}</span>
                             <button
                                 type="button"
                                 className="btn_view_person"
                                 title="Переглянути картку особи"
                                 onClick={() => onViewPerson(person)}
                             >
-                                Перегляд
+                                <img src="eye.svg" alt="View Person" className="btn_icon" />
                             </button>
                             {canEdit && <button
                                 type="button"
@@ -49,7 +49,7 @@ export default function PositionNode({
                                 title="Зняти з посади"
                                 onClick={() => onUnassignClick(person)}
                             >
-                                ×
+                                <img src="close.svg" alt="remove person" className="btn_icon" />
                             </button>}
                         </div>
                     ) : (

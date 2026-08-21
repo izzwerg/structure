@@ -37,7 +37,7 @@
 .subdivision_node {
     border: 2px solid #555;
     border-radius: 8px;
-    padding: 1rem;
+    padding: 16px;
     background-color: #fafafa;
     margin-bottom: 0.3rem;
 }
@@ -47,8 +47,8 @@
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 0.8rem;
+    font-size: 20px;
+    margin-bottom: 12px;
     color: #222;
     text-transform: uppercase;
 }
@@ -56,8 +56,7 @@
 .subdivision_content {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
-    padding-left: 0.5rem;
+    gap: 12px;
 }
 
 /* Посада */
@@ -69,7 +68,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* max-width: 420px; */
+    width: fit-content;
+    gap: 8px;
 }
 
 .position_info {
@@ -81,7 +81,8 @@
 .position_right {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
+    width: fit-content;
 }
 
 .position_id {
@@ -109,15 +110,25 @@
 .assigned_person {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     background: #e8f4ea;
-    padding: 0.2rem 0.6rem;
+    padding: 4px 8px;
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 16px;
+
+    .person_name {
+        font-weight: bold;
+        width: 350px;
+    }
+
+    .btn_icon {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .btn_unassign {
-    background: transparent;
+    background: #d9534f;
     border: none;
     color: #d9534f;
     font-weight: bold;
