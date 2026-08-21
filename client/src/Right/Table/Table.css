@@ -64,3 +64,57 @@
         background-color: #525200;
     }
 }
+
+.filter_table_container {
+
+    .filter_table_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        border-bottom: 1px solid #e2e8f0;
+
+        .filter_table_cell {
+            padding: 8px;
+            font-weight: bold;
+            text-align: center;
+
+            &.check {
+                width: 40px;
+            }
+
+            &.property {
+                width: 200px;
+            }
+
+            &.filter {
+                width: 300px;
+            }
+
+            &.sort {
+                width: 200px;
+
+
+            }
+
+            &.top {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e2e8f0;
+                height: 100%;
+                height: 40px;
+            }
+
+            .sort_select {
+                width: 100%;
+                padding: 4px;
+                border-radius: 4px;
+                border: 1px solid #ccc;
+            }
+        }
+    }
+
+    .filter_table_body {
+        max-height: calc(100vh - 500px);
+        overflow-y: auto;
+    }
+}

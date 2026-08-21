@@ -88,23 +88,27 @@ export default function TableFilterModal({
                 <div className="filter_section" style={{ marginTop: '1.5rem' }}>
                     <h4>Колонки та фільтрація полів</h4>
 
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr style={{ borderBottom: '2px solid #ccc', textAlign: 'left' }}>
-                                <th>Виводити</th>
-                                <th>Властивість</th>
-                                <th>Фільтр значення</th>
-                                <th>Сортування</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/* Поле ПІБ завжди виводиться */}
-                            <tr style={{ borderBottom: '1px solid #eee' }}>
-                                <td><input type="checkbox" checked disabled /></td>
-                                <td><strong>ПІБ</strong></td>
-                                <td>—</td>
-                                <td>
+                    <div className='filter_table_container' >
+                        <div className="filter_table_header">
+                            <div className="filter_table_cell check top"></div>
+                            <div className="filter_table_cell property top">Властивість</div>
+                            <div className="filter_table_cell filter top">Фільтр значення</div>
+                            <div className="filter_table_cell sort top">Сортування</div>
+                        </div>
+                        <div className='filter_table_body'>
+                            <div className="filter_table_header">
+                                <div className="filter_table_cell check">
+                                    <input type="checkbox" checked disabled />
+                                </div>
+                                <div className="filter_table_cell property">
+                                    ПІБ
+                                </div>
+                                <div className="filter_table_cell filter">
+                                    —
+                                </div>
+                                <div className="filter_table_cell sort">
                                     <select
+                                        className="sort_select"
                                         value={
                                             filterState.sort.key === 'fullName'
                                                 ? filterState.sort.dir
@@ -125,14 +129,14 @@ export default function TableFilterModal({
                                             }
                                         }}
                                     >
-                                        <option value="">За замовчуванням (Дерево)</option>
+                                        <option value="">по структурі</option>
                                         <option value="asc">ПІБ: А-Я (Зростання)</option>
                                         <option value="desc">ПІБ: Я-А (Спадання)</option>
-                                        <option value="created_asc">Дата додавання: зростання (спочатку давніші)</option>
-                                        <option value="created_desc">Дата додавання: спадання (спочатку новіші)</option>
+                                        <option value="created_asc">спочатку давніші</option>
+                                        <option value="created_desc">спочатку новіші</option>
                                     </select>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
 
                             {allColumns.map((col) => {
                                 const colConf = filterState.columns[col.id] || {
@@ -144,19 +148,34 @@ export default function TableFilterModal({
                                 const isBoolean = col.type === 'boolean';
 
                                 return (
-                                    <tr key={col.id} style={{ borderBottom: '1px solid #eee' }}>
-                                        <td>
+                                    <div key={col.id} className='filter_table_header'>
+                                        <div className="filter_table_cell check">
                                             <input
                                                 type="checkbox"
                                                 checked={colConf.show}
-                                                onChange={() => handleColumnToggle(col.id)}
+                                                onChange={(e) => {
+                                                    setFilterState({
+                                                        ...filterState,
+                                                        columns: {
+                                                            ...filterState.columns,
+                                                            [col.id]: {
+                                                                ...colConf,
+                                                                show: e.target.checked
+                                                            }
+                                                        }
+                                                    });
+                                                }}
                                             />
-                                        </td>
-                                        <td>{col.name}</td>
-                                        <td>
+                                            {col.label}
+                                        </div>
+                                        <div className="filter_table_cell property">
+                                            {col.name}
+                                        </div>
+                                        <div className="filter_table_cell filter">
                                             {colConf.show && (
                                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                                                     <select
+                                                        className="sort_select"
                                                         value={colConf.filterType}
                                                         onChange={(e) =>
                                                             handleColumnFilterChange(col.id, 'filterType', e.target.value)
@@ -170,6 +189,7 @@ export default function TableFilterModal({
                                                     {col.type === 'date' && colConf.filterType === 'all' && (
                                                         <div style={{ display: 'flex', gap: '0.3rem', fontSize: '0.8rem' }}>
                                                             <input
+                                                                className="sort_select"
                                                                 type="date"
                                                                 value={colConf.dateFrom || ''}
                                                                 onChange={(e) =>
@@ -178,6 +198,7 @@ export default function TableFilterModal({
                                                                 placeholder="З"
                                                             />
                                                             <input
+                                                                className="sort_select"
                                                                 type="date"
                                                                 value={colConf.dateTo || ''}
                                                                 onChange={(e) =>
@@ -189,10 +210,11 @@ export default function TableFilterModal({
                                                     )}
                                                 </div>
                                             )}
-                                        </td>
-                                        <td>
+                                        </div>
+                                        <div className="filter_table_cell sort">
                                             {colConf.show && !isBoolean && (
                                                 <select
+                                                    className="sort_select"
                                                     value={filterState.sort.key === col.id ? filterState.sort.dir : ''}
                                                     onChange={(e) =>
                                                         setFilterState({
@@ -206,19 +228,19 @@ export default function TableFilterModal({
                                                     <option value="desc">Спадання</option>
                                                 </select>
                                             )}
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
                                 );
                             })}
-                        </tbody>
-                    </table>
-                </div>
+                        </div>
+                    </div>
 
-                <div className="form_actions" style={{ marginTop: '1.5rem' }}>
+                </div>
+                {/* <div className="form_actions" style={{ marginTop: '1.5rem' }}>
                     <button type="button" onClick={onClose} className="btn_primary">
                         Застосувати
                     </button>
-                </div>
+                </div> */}
             </div>
         </Modal>
     );
