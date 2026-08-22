@@ -90,6 +90,8 @@ export default function Person() {
             firstName: person.firstName || '',
             middleName: person.middleName || '',
             gender: person.gender || 'M',
+            rank: person.rank || '',
+            vos: person.vos || '',
             extraData: person.extraData || {},
         });
         setOpen(true);
