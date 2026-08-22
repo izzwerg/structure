@@ -272,7 +272,6 @@ export default function Tree() {
     };
 
     const handleOpenAssign = (treeNodeId, vosByPos) => {
-        console.log('Opening assign modal for treeNodeId:', vosByPos);
         setSelectedPositionNodeId(treeNodeId);
         setSelectedPersonId('');
         setSelectedPositionVos(vosByPos);

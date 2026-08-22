@@ -3,9 +3,9 @@ import Modal from '@mui/material/Modal';
 const AssignModal = ({ assignModalOpen, setAssignModalOpen, handleConfirmAssign, selectedPositionNodeId, unassignedPersons, selectedPersonId, setSelectedPersonId }) => {
     return (
         <Modal open={assignModalOpen} onClose={() => setAssignModalOpen(false)}>
-            <div className="modal_content">
+            <div className="modal_content modal_assign">
                 <form onSubmit={handleConfirmAssign} className="property_form">
-                    <h3>Призначити особу на посаду (ID: {selectedPositionNodeId})</h3>
+                    <h3>Призначити особу на посаду (№ з/п: {selectedPositionNodeId})</h3>
                     <div className="form_group">
                         <label>Оберіть особу зі списку (з непризначених):</label>
                         {unassignedPersons.length === 0 ? (
@@ -28,7 +28,7 @@ const AssignModal = ({ assignModalOpen, setAssignModalOpen, handleConfirmAssign,
                     <div className="form_actions">
                         <button
                             type="submit"
-                            className="btn_primary"
+                            className="btn_primary btn_assign"
                             disabled={unassignedPersons.length === 0}
                         >
                             Призначити
