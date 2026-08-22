@@ -29,7 +29,7 @@ const AssignModal = ({ assignModalOpen, setAssignModalOpen, handleConfirmAssign,
                         <button
                             type="submit"
                             className="btn_primary btn_assign"
-                            disabled={unassignedPersons.length === 0}
+                            disabled={unassignedPersons.length === 0 || !selectedPersonId}
                         >
                             Призначити
                         </button>

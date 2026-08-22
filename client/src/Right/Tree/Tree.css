@@ -274,6 +274,11 @@
 
             .btn_assign {
                 background-color: #c82333;
+
+                &:disabled {
+                    background-color: #c8233365;
+                    cursor: auto
+                }
             }
         }
     }
