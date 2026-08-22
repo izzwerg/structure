@@ -9,6 +9,7 @@ const INITIAL_PERSON_STATE = {
     firstName: '',
     middleName: '',
     rank: '',
+    vos: '',
     position: '',
     gender: 'M',
     extraData: {},
@@ -86,13 +87,13 @@ export default function Person() {
     const handleOpenEdit = (person) => {
         setEditingId(person._id);
         setFormData({
-            lastName: person.lastName || '',
-            firstName: person.firstName || '',
-            middleName: person.middleName || '',
-            gender: person.gender || 'M',
-            rank: person.rank || '',
-            vos: person.vos || '',
-            extraData: person.extraData || {},
+            lastName: person.lastName || INITIAL_PERSON_STATE.lastName,
+            firstName: person.firstName || INITIAL_PERSON_STATE.firstName,
+            middleName: person.middleName || INITIAL_PERSON_STATE.middleName,
+            gender: person.gender || INITIAL_PERSON_STATE.gender,
+            rank: person.rank || INITIAL_PERSON_STATE.rank,
+            vos: person.vos || INITIAL_PERSON_STATE.vos,
+            extraData: person.extraData || INITIAL_PERSON_STATE.extraData,
         });
         setOpen(true);
     };
