@@ -28,6 +28,16 @@ const personSchema = new mongoose.Schema({
         default: '',
         trim: true,
     },
+    vos: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    vosByPos: {
+        type: String,
+        default: '',
+        trim: true,
+    },
     position: {
         type: String,
         default: '',
@@ -35,7 +45,7 @@ const personSchema = new mongoose.Schema({
     },
     treeNodeId: {
         type: String,
-        default: 'none',
+        default: '',
         trim: true,
     },
     isActive: {

@@ -208,6 +208,8 @@ export default function Table() {
         { id: 'treeNodeId', name: '№ з/п' },
         { id: 'position', name: 'Посада' },
         { id: 'gender', name: 'Стать' },
+        { id: 'vos', name: 'ВОС' },
+        { id: 'vosByPos', name: 'ВОС за посадою' },
         ...properties.map((p) => ({
             id: `extra_${p.property_id}`,
             name: p.property_name,

@@ -106,12 +106,14 @@ const PersonView = ({ open, onClose, person, properties }) => {
                             </button>
                         </div>
 
-                        <h4>{person.position || 'Позиція не вказана'}</h4>
+                        {person.position && <h4>{person.position}</h4>}
 
                         <div className="view_section">
                             <h4>Основні дані</h4>
                             <p><strong>Стать:</strong> {person.gender === 'M' ? 'Чоловіча' : 'Жіноча'}</p>
-                            <p><strong>Tree Node ID:</strong> <code>{person.treeNodeId}</code></p>
+                            {person.treeNodeId && <p><strong>№ з/п:</strong> <code>{person.treeNodeId}</code></p>}
+                            {person.vos && <p><strong>ВОС:</strong> <code>{person.vos}</code></p>}
+                            {person.vosByPos && <p><strong>ВОС за посадою:</strong> <code>{person.vosByPos}</code></p>}
                         </div>
 
                         {properties.length > 0 && Object.entries(groupedProperties).map(([categoryName, propsGroup]) => (

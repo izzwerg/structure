@@ -7,7 +7,7 @@ const AssignModal = ({ assignModalOpen, setAssignModalOpen, handleConfirmAssign,
                 <form onSubmit={handleConfirmAssign} className="property_form">
                     <h3>Призначити особу на посаду (ID: {selectedPositionNodeId})</h3>
                     <div className="form_group">
-                        <label>Оберіть особу зі списку (Tree Node ID = none):</label>
+                        <label>Оберіть особу зі списку (з непризначених):</label>
                         {unassignedPersons.length === 0 ? (
                             <p>Вільні картки відсутні.</p>
                         ) : (

@@ -120,11 +120,11 @@ router.post('/position', async (req, res) => {
 // 4. Призначити/зняти особу з посади
 router.post('/assign-person', async (req, res) => {
     try {
-        const { personId, treeNodeId } = req.body;
+        const { personId, treeNodeId, vosByPos } = req.body;
 
         let positionTitle = '';
 
-        if (treeNodeId && treeNodeId !== 'none') {
+        if (treeNodeId && treeNodeId !== '') {
             const position = await Position.findOne({ treeNodeId });
             if (position) {
                 positionTitle = position.fullTitle || position.shortTitle;
@@ -134,8 +134,9 @@ router.post('/assign-person', async (req, res) => {
         const person = await Person.findByIdAndUpdate(
             personId,
             {
-                treeNodeId: treeNodeId || 'none',
+                treeNodeId: treeNodeId || '',
                 position: positionTitle,
+                vosByPos: vosByPos || ''
             },
             { returnDocument: 'after' }
         );
@@ -153,8 +154,8 @@ router.delete('/position/:id', async (req, res) => {
         const position = await Position.findById(posId);
         if (!position) return res.status(404).json({ message: 'Посаду не знайдено' });
 
-        // Очищаємо Tree Node ID у прив'язаної людини (скидаємо на 'none')
-        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: 'none', position: '' });
+        // Очищаємо Tree Node ID у прив'язаної людини (скидаємо на '')
+        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: '', position: '', vosByPos: '' });
 
         // Видаляємо посилання з батьківського підрозділу чи кореня
         await Subdivision.updateMany({}, { $pull: { items: { itemId: posId } } });
@@ -202,11 +203,11 @@ router.delete('/subdivision/:id', async (req, res) => {
         // Збираємо всі підпідрозділи та посади
         const { subIds, posIds, treeNodeIdsToReset } = await collectNestedIds(targetSubId);
 
-        // Скидаємо картки людей у 'none'
+        // Скидаємо картки людей у ''
         if (treeNodeIdsToReset.length > 0) {
             await Person.updateMany(
                 { treeNodeId: { $in: treeNodeIdsToReset } },
-                { treeNodeId: 'none', position: '' }
+                { treeNodeId: '', position: '', vosByPos: '' }
             );
         }
 
@@ -258,18 +259,25 @@ router.put('/position/:id', async (req, res) => {
             return res.status(404).json({ message: 'Посаду не знайдено' });
         }
 
-        // Якщо змінюється Tree Node ID — перевіряємо унікальність та оновлюємо прив'язану людину
+        const newPositionTitle = fullTitle || shortTitle;
+
+        // Перевіряємо унікальність Tree Node ID при його зміні
         if (treeNodeId !== oldPosition.treeNodeId) {
             const exists = await Position.findOne({ treeNodeId });
             if (exists) {
                 return res.status(400).json({ message: `Посада з ID "${treeNodeId}" вже існує` });
             }
-
-            await Person.updateMany(
-                { treeNodeId: oldPosition.treeNodeId },
-                { treeNodeId }
-            );
         }
+
+        // Синхронно оновлюємо дані особи, якщо на посаді вже є призначена людина
+        await Person.updateMany(
+            { treeNodeId: oldPosition.treeNodeId },
+            {
+                treeNodeId: treeNodeId,
+                position: newPositionTitle,
+                vosByPos: specialtyCode || '' // Записуємо новий ВОС за посадою
+            }
+        );
 
         const position = await Position.findByIdAndUpdate(
             req.params.id,

@@ -14,11 +14,11 @@ router.get('/', async (req, res) => {
             { $match: filter },
             {
                 $addFields: {
-                    // Якщо treeNodeId не 'none', перетворюємо рядок на число для коректного сортування
+                    // Якщо treeNodeId не '', перетворюємо рядок на число для коректного сортування
                     numericTreeNodeId: {
                         $cond: {
-                            if: { $eq: ['$treeNodeId', 'none'] },
-                            then: Number.MAX_SAFE_INTEGER, // 'none' відправляємо в кінець
+                            if: { $eq: ['$treeNodeId', ''] },
+                            then: Number.MAX_SAFE_INTEGER, // '' відправляємо в кінець
                             else: { $toInt: '$treeNodeId' } // Числові значення перетворюємо на Number
                         }
                     }
@@ -55,7 +55,7 @@ router.get('/archived', async (req, res) => {
                 $addFields: {
                     numericTreeNodeId: {
                         $cond: {
-                            if: { $eq: ['$treeNodeId', 'none'] },
+                            if: { $eq: ['$treeNodeId', ''] },
                             then: Number.MAX_SAFE_INTEGER,
                             else: { $toInt: '$treeNodeId' }
                         }
@@ -100,7 +100,8 @@ router.put('/:id', async (req, res) => {
 
         // Якщо картку деактивують, автоматично скидаємо treeNodeId
         if (updateData.isActive === false) {
-            updateData.treeNodeId = 'none';
+            updateData.treeNodeId = '';
+            updateData.vosByPos = '';
         }
 
         const person = await Person.findByIdAndUpdate(
@@ -126,7 +127,8 @@ router.delete('/:id', async (req, res) => {
             req.params.id,
             {
                 isActive: false,
-                treeNodeId: 'none' // Автоматично скидаємо прив'язку до дерева
+                treeNodeId: '',
+                vosByPos: ''
             },
             { returnDocument: 'after' }
         );

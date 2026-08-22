@@ -215,3 +215,10 @@
 .btn_view_person:hover {
     background-color: #138496;
 }
+
+.unassigned {
+    .btn_icon {
+        width: 16px;
+        height: 16px;
+    }
+}

@@ -151,6 +151,15 @@ const PersonEdit = ({ open, onClose, handleSubmit, editingId, formData, setFormD
                                 ))}
                             </select>
                         </div>
+                        <div className="form_group">
+                            <label>ВОС: </label>
+                            <input
+                                type="text"
+                                name="vos"
+                                value={formData.vos}
+                                onChange={handleMainChange}
+                            />
+                        </div>
                     </div>
 
                     {properties.length > 0 && Object.entries(groupedProperties).map(([categoryName, propsGroup]) => (

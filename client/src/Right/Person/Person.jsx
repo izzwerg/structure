@@ -194,7 +194,7 @@ export default function Person() {
                     <table>
                         <thead>
                             <tr>
-                                <th>Tree Node ID</th>
+                                <th>№ з/п</th>
                                 <th>ПІБ</th>
                                 <th>Дії</th>
                             </tr>

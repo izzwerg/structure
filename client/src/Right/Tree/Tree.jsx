@@ -47,6 +47,7 @@ export default function Tree() {
     const [assignModalOpen, setAssignModalOpen] = useState(false);
     const [selectedPositionNodeId, setSelectedPositionNodeId] = useState(null);
     const [selectedPersonId, setSelectedPersonId] = useState('');
+    const [selectedPositionVos, setSelectedPositionVos] = useState(''); // Додано для збереження vosByPos при призначенні
 
     // Модальне вікно перегляду картки особи
     const [viewPersonOpen, setViewPersonOpen] = useState(false);
@@ -102,7 +103,7 @@ export default function Tree() {
             const res = await fetch('/api/structure/assign-person', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ personId: personToUnassign._id, treeNodeId: 'none' }),
+                body: JSON.stringify({ personId: personToUnassign._id, treeNodeId: '', vosByPos: '' }),
             });
 
             if (!res.ok) throw new Error('Помилка зняття з посади');
@@ -136,14 +137,14 @@ export default function Tree() {
     }, {});
 
     const personsByNodeId = structureData.persons.reduce((acc, person) => {
-        if (person.treeNodeId && person.treeNodeId !== 'none') {
+        if (person.treeNodeId && person.treeNodeId !== '') {
             acc[person.treeNodeId] = person;
         }
         return acc;
     }, {});
 
     const unassignedPersons = structureData.persons.filter(
-        (p) => !p.treeNodeId || p.treeNodeId === 'none'
+        (p) => !p.treeNodeId || p.treeNodeId === ''
     );
 
     // Відкриття модалок створення
@@ -270,9 +271,11 @@ export default function Tree() {
         }
     };
 
-    const handleOpenAssign = (treeNodeId) => {
+    const handleOpenAssign = (treeNodeId, vosByPos) => {
+        console.log('Opening assign modal for treeNodeId:', vosByPos);
         setSelectedPositionNodeId(treeNodeId);
         setSelectedPersonId('');
+        setSelectedPositionVos(vosByPos);
         setAssignModalOpen(true);
     };
 
@@ -287,6 +290,7 @@ export default function Tree() {
                 body: JSON.stringify({
                     personId: selectedPersonId,
                     treeNodeId: selectedPositionNodeId,
+                    vosByPos: selectedPositionVos,
                 }),
             });
             if (!res.ok) throw new Error('Помилка призначення особи');

@@ -12,7 +12,9 @@ export default function TableFilterModal({
         { id: 'rank', name: 'Військове звання', type: 'text' },
         { id: 'position', name: 'Посада', type: 'text' },
         { id: 'gender', name: 'Стать', type: 'text' },
-        { id: 'treeNodeId', name: 'Tree Node ID', type: 'text' },
+        { id: 'treeNodeId', name: '№ з/п', type: 'text' },
+        { id: 'vos', name: 'ВОС', type: 'text' },
+        { id: 'vosByPos', name: 'ВОС за посадою', type: 'text' },
     ];
 
     // Злиємо базові та динамічні властивості в один список
@@ -25,19 +27,6 @@ export default function TableFilterModal({
             rawProp: p,
         })),
     ];
-
-    // const handleColumnToggle = (colId) => {
-    //     setFilterState((prev) => {
-    //         const current = prev.columns[colId] || { show: false, filterType: 'all', dateFrom: '', dateTo: '' };
-    //         return {
-    //             ...prev,
-    //             columns: {
-    //                 ...prev.columns,
-    //                 [colId]: { ...current, show: !current.show },
-    //             },
-    //         };
-    //     });
-    // };
 
     const handleColumnFilterChange = (colId, field, value) => {
         setFilterState((prev) => {

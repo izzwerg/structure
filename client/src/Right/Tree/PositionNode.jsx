@@ -57,9 +57,9 @@ export default function PositionNode({
                             {canEdit && <button
                                 type="button"
                                 className="btn_assign"
-                                onClick={() => onAssignClick(position.treeNodeId)}
+                                onClick={() => onAssignClick(position.treeNodeId, position.specialtyCode)}
                             >
-                                + Особа
+                                <img src="user-plus.svg" alt="assign person" className="btn_icon" />
                             </button>}
                         </div>
                     )}
