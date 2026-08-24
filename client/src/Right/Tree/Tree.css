@@ -225,6 +225,7 @@
 }
 
 .modal_content {
+    position: relative;
 
     &.modal_confirm {
         width: 400px;

@@ -388,7 +388,7 @@ export default function Tree() {
             </div>
 
             {/* Модальне вікно підрозділу (створення / редагування) */}
-            <Modal open={modalType === 'subdivision'} onClose={handleCloseAddModal}>
+            <Modal open={modalType === 'subdivision'} onClose={handleCloseAddModal} hideBackdrop>
                 <div className="modal_content">
                     <form onSubmit={handleSaveSubdivision} className="property_form">
                         <h3>{editingId ? 'Редагувати підрозділ' : 'Створити новий підрозділ'}</h3>
@@ -432,7 +432,7 @@ export default function Tree() {
             </Modal>
 
             {/* Модальне вікно посади (створення / редагування) */}
-            <Modal open={modalType === 'position'} onClose={handleCloseAddModal}>
+            <Modal open={modalType === 'position'} onClose={handleCloseAddModal} hideBackdrop>
                 <div className="modal_content">
                     <form onSubmit={handleSavePosition} className="property_form">
                         <h3>{editingId ? 'Редагувати посаду' : 'Створити нову посаду'}</h3>
