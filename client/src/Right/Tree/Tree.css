@@ -284,3 +284,12 @@
         }
     }
 }
+
+.subdivision_edit {
+
+    .property_form {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+}

@@ -389,7 +389,7 @@ export default function Tree() {
 
             {/* Модальне вікно підрозділу (створення / редагування) */}
             <Modal open={modalType === 'subdivision'} onClose={handleCloseAddModal} hideBackdrop>
-                <div className="modal_content">
+                <div className="modal_content subdivision_edit">
                     <form onSubmit={handleSaveSubdivision} className="property_form">
                         <h3>{editingId ? 'Редагувати підрозділ' : 'Створити новий підрозділ'}</h3>
                         <div className="form_group">
