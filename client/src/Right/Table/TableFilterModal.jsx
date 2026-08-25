@@ -223,13 +223,10 @@ export default function TableFilterModal({
                             })}
                         </div>
                     </div>
-
                 </div>
-
                 <button type="button" onClick={onClose} className="btn_close">
                     <img src="close-square.svg" alt="закрити" />
                 </button>
-
             </div>
         </Modal>
     );
