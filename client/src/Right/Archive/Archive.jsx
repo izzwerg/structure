@@ -77,8 +77,8 @@ export default function Archive() {
 
     return (
         <div className="archive_container">
-            <h2>Архів карток (видалені)</h2>
             <div className="person_filters">
+                <h2>Архів карток (видалені)</h2>
                 <input
                     type="text"
                     placeholder="Пошук за ПІБ..."

@@ -172,21 +172,18 @@ export default function Person() {
 
     return (
         <div className="person_container">
-            <h2>Картки осіб</h2>
             <div className="person_filters">
+                <h2>Картки осіб</h2>
                 <input
                     type="text"
                     placeholder="Пошук за ПІБ..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button onClick={handleOpenCreate} className="btn_primary">
-                    Додати картку
+                <button onClick={handleOpenCreate} className="btn_primary" title="Додати картку">
+                    <img src="user-plus.svg" alt="Додати картку" />
                 </button>
-
             </div>
-
-
 
             {error && <div className="error_message">{error}</div>}
 
