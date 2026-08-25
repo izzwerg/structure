@@ -498,7 +498,11 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_actions">
-                            <button type="submit" className="btn_primary btn_assign">
+                            <button
+                                type="submit"
+                                className="btn_primary btn_assign"
+                                disabled={!posForm.treeNodeId || !posForm.shortTitle || !posForm.fullTitle || !posForm.rank || !posForm.specialtyCode || !posForm.tariff}
+                            >
                                 {editingId ? 'Зберегти' : 'Створити'}
                             </button>
                             <button type="button" onClick={handleCloseAddModal} className="btn_secondary">
