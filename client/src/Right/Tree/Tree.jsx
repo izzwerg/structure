@@ -420,7 +420,11 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_actions">
-                            <button type="submit" className="btn_primary">
+                            <button
+                                type="submit"
+                                className="btn_primary btn_assign"
+                                disabled={!subForm.fullTitle || !subForm.title || !subForm.shortTitle}
+                            >
                                 {editingId ? 'Зберегти' : 'Створити'}
                             </button>
                             <button type="button" onClick={handleCloseAddModal} className="btn_secondary">
@@ -433,11 +437,11 @@ export default function Tree() {
 
             {/* Модальне вікно посади (створення / редагування) */}
             <Modal open={modalType === 'position'} onClose={handleCloseAddModal} hideBackdrop>
-                <div className="modal_content">
+                <div className="modal_content subdivision_edit">
                     <form onSubmit={handleSavePosition} className="property_form">
                         <h3>{editingId ? 'Редагувати посаду' : 'Створити нову посаду'}</h3>
                         <div className="form_group">
-                            <label>Номер за порядком (Tree Node ID):*</label>
+                            <label>Номер за порядком:*</label>
                             <input
                                 type="text"
                                 value={posForm.treeNodeId}
@@ -456,7 +460,7 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_group">
-                            <label>Повна назва посади:</label>
+                            <label>Повна назва посади*:</label>
                             <input
                                 type="text"
                                 value={posForm.fullTitle}
@@ -464,7 +468,7 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_group">
-                            <label>Потрібне звання:</label>
+                            <label>Потрібне звання*:</label>
                             <select
                                 value={posForm.rank}
                                 onChange={(e) => setPosForm({ ...posForm, rank: e.target.value })}
@@ -478,7 +482,7 @@ export default function Tree() {
                             </select>
                         </div>
                         <div className="form_group">
-                            <label>Номер спеціальності:</label>
+                            <label>ШПК (потрібна ВОС)*:</label>
                             <input
                                 type="text"
                                 value={posForm.specialtyCode}
@@ -486,7 +490,7 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_group">
-                            <label>Тариф:</label>
+                            <label>Тариф*:</label>
                             <input
                                 type="text"
                                 value={posForm.tariff}
@@ -494,7 +498,7 @@ export default function Tree() {
                             />
                         </div>
                         <div className="form_actions">
-                            <button type="submit" className="btn_primary">
+                            <button type="submit" className="btn_primary btn_assign">
                                 {editingId ? 'Зберегти' : 'Створити'}
                             </button>
                             <button type="button" onClick={handleCloseAddModal} className="btn_secondary">
