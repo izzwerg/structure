@@ -225,11 +225,11 @@ export default function TableFilterModal({
                     </div>
 
                 </div>
-                {/* <div className="form_actions" style={{ marginTop: '1.5rem' }}>
-                    <button type="button" onClick={onClose} className="btn_primary">
-                        Застосувати
-                    </button>
-                </div> */}
+
+                <button type="button" onClick={onClose} className="btn_close">
+                    <img src="close-square.svg" alt="закрити" />
+                </button>
+
             </div>
         </Modal>
     );
