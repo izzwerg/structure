@@ -191,36 +191,28 @@ export default function Person() {
                 {filteredPersons.length === 0 ? (
                     <p>Картки відсутні.</p>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>№ з/п</th>
-                                <th>ПІБ</th>
-                                <th>Дії</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredPersons.map((p) => (
-                                <tr key={p._id}>
-                                    <td><code>{p.treeNodeId}</code></td>
-                                    <td>
-                                        <strong>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</strong>
-                                    </td>
-                                    <td>
-                                        <button onClick={() => handleOpenView(p)} className="btn_view">
-                                            Перегляд
-                                        </button>
-                                        <button onClick={() => handleOpenEdit(p)} className="btn_edit">
-                                            Редагувати
-                                        </button>
-                                        <button onClick={() => handleOpenDelete(p)} className="btn_delete">
-                                            Видалити
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className='list'>
+                        {filteredPersons.map((p) => (
+                            <div
+                                key={p._id}
+                                className='person_item'
+                            >
+                                <div className='number'>{p.treeNodeId}</div>
+                                <div className='name'>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</div>
+                                <div className='actions'>
+                                    <button onClick={() => handleOpenView(p)} className="btn_view">
+                                        Перегляд
+                                    </button>
+                                    <button onClick={() => handleOpenEdit(p)} className="btn_edit">
+                                        Редагувати
+                                    </button>
+                                    <button onClick={() => handleOpenDelete(p)} className="btn_delete">
+                                        Видалити
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
             {/* Модальне вікно Перегляду */}

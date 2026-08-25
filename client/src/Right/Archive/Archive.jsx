@@ -89,7 +89,7 @@ export default function Archive() {
 
             {error && <div className="error_message">{error}</div>}
 
-            <div className="archive_list">
+            <div className="persons_list">
                 {filteredPersons.length === 0 ? (
                     <p>В архіві немає жодної картки.</p>
                 ) : (
