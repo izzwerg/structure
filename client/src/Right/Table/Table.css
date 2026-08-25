@@ -81,6 +81,69 @@
 
             &.check {
                 width: 40px;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                /* Базовий стиль для чекбокса */
+                input[type="checkbox"] {
+                    /* Приховуємо дефолтний вигляд браузера */
+                    -webkit-appearance: none;
+                    appearance: none;
+
+                    /* Розміри та позиціонування */
+                    width: 18px;
+                    height: 18px;
+                    margin: 0;
+                    cursor: pointer;
+
+                    /* Вигляд непропорційного або порожнього стан */
+                    background-color: #fff;
+                    border: 2px solid #6c757d;
+                    border-radius: 4px;
+                    outline: none;
+                    transition: background-color 0.2s, border-color 0.2s;
+
+                    /* Використовуємо flex для вирівнювання галочки */
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                /* Ефект при наведенні */
+                input[type="checkbox"]:hover {
+                    border-color: olive;
+                }
+
+                /* Стан відміченого чекбокса (Checked) */
+                input[type="checkbox"]:checked {
+                    background-color: olive;
+                    border-color: olive;
+                }
+
+                /* Малюємо галочку у відміченому стані через ::before */
+                input[type="checkbox"]:checked::before {
+                    content: '';
+                    width: 5px;
+                    height: 9px;
+                    border: solid white;
+                    border-width: 0 2px 2px 0;
+                    transform: rotate(45deg);
+                    margin-bottom: 2px;
+                }
+
+                /* Стан фокусу для доступності (з клавіатури) */
+                input[type="checkbox"]:focus-visible {
+                    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+                }
+
+                /* Неактивний стан (Disabled) */
+                input[type="checkbox"]:disabled {
+                    background-color: #e9ecef;
+                    border-color: #ced4da;
+                    cursor: not-allowed;
+                }
             }
 
             &.property {
@@ -140,6 +203,7 @@
     .sort_select {
         max-width: 200px;
     }
+
 }
 
 h3 {
