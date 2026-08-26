@@ -41,14 +41,44 @@
         border-radius: 8px;
         padding: 16px;
         background-color: #fafafa;
+        width: fit-content;
 
-        .number {}
+        .number {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            background-color: #cccccc;
 
-        .name {}
+        }
+
+        .mark {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+        }
+
+        .name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            width: 400px;
+        }
 
         .actions {
             display: flex;
             gap: 4px;
+
+            button {
+
+                img {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
         }
     }
 }

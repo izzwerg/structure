@@ -35,7 +35,7 @@ export default function Person() {
 
     const [searchTerm, setSearchTerm] = useState('');
     const filteredPersons = persons.filter((p) => {
-        const fullName = `${p.lastName} ${p.firstName} ${p.middleName}`.toLowerCase();
+        const fullName = `${p.subdivisionMark} ${p.lastName} ${p.firstName} ${p.middleName}`.toLowerCase();
         return fullName.includes(searchTerm.toLowerCase());
     });
 
@@ -202,13 +202,13 @@ export default function Person() {
                                 <div className='name'>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</div>
                                 <div className='actions'>
                                     <button onClick={() => handleOpenView(p)} className="btn_view">
-                                        Перегляд
+                                        <img src="eye.svg" alt="Перегляд" />
                                     </button>
                                     <button onClick={() => handleOpenEdit(p)} className="btn_edit">
-                                        Редагувати
+                                        <img src="edit.svg" alt="Перегляд" />
                                     </button>
                                     <button onClick={() => handleOpenDelete(p)} className="btn_delete">
-                                        Видалити
+                                        <img src="close.svg" alt="Перегляд" />
                                     </button>
                                 </div>
                             </div>
