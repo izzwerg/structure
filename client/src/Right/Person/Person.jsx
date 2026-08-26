@@ -198,6 +198,7 @@ export default function Person() {
                                 className='person_item'
                             >
                                 <div className='number'>{p.treeNodeId}</div>
+                                <div className='mark'>{p.subdivisionMark}</div>
                                 <div className='name'>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</div>
                                 <div className='actions'>
                                     <button onClick={() => handleOpenView(p)} className="btn_view">

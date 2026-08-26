@@ -6,16 +6,6 @@ const subdivisionSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    fullTitle: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    shortTitle: {
-        type: String,
-        required: true,
-        trim: true,
-    },
     parentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subdivision',

@@ -80,7 +80,7 @@ router.post('/subdivision', async (req, res) => {
 // 3. Створити посаду (+p) з підтримкою insertIndex
 router.post('/position', async (req, res) => {
     try {
-        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff, parentId, insertIndex } = req.body;
+        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff, parentId, insertIndex, subdivisionMark } = req.body;
 
         const existingPos = await Position.findOne({ treeNodeId });
         if (existingPos) {
@@ -95,6 +95,7 @@ router.post('/position', async (req, res) => {
             specialtyCode,
             tariff,
             subdivisionId: parentId || null,
+            subdivisionMark
         });
 
         const newItem = { kind: 'position', itemId: position._id };
@@ -120,7 +121,7 @@ router.post('/position', async (req, res) => {
 // 4. Призначити/зняти особу з посади
 router.post('/assign-person', async (req, res) => {
     try {
-        const { personId, treeNodeId, vosByPos } = req.body;
+        const { personId, treeNodeId, vosByPos, subdivisionMark } = req.body;
 
         let positionTitle = '';
 
@@ -136,7 +137,8 @@ router.post('/assign-person', async (req, res) => {
             {
                 treeNodeId: treeNodeId || '',
                 position: positionTitle,
-                vosByPos: vosByPos || ''
+                vosByPos: vosByPos || '',
+                subdivisionMark: subdivisionMark || ''
             },
             { returnDocument: 'after' }
         );
@@ -155,7 +157,7 @@ router.delete('/position/:id', async (req, res) => {
         if (!position) return res.status(404).json({ message: 'Посаду не знайдено' });
 
         // Очищаємо Tree Node ID у прив'язаної людини (скидаємо на '')
-        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: '', position: '', vosByPos: '' });
+        await Person.updateMany({ treeNodeId: position.treeNodeId }, { treeNodeId: '', position: '', vosByPos: '', subdivisionMark: '' });
 
         // Видаляємо посилання з батьківського підрозділу чи кореня
         await Subdivision.updateMany({}, { $pull: { items: { itemId: posId } } });
@@ -207,7 +209,7 @@ router.delete('/subdivision/:id', async (req, res) => {
         if (treeNodeIdsToReset.length > 0) {
             await Person.updateMany(
                 { treeNodeId: { $in: treeNodeIdsToReset } },
-                { treeNodeId: '', position: '', vosByPos: '' }
+                { treeNodeId: '', position: '', vosByPos: '', subdivisionMark: '' }
             );
         }
 
@@ -251,8 +253,9 @@ router.put('/subdivision/:id', async (req, res) => {
 
 // PUT /api/structure/position/:id — редагування посади
 router.put('/position/:id', async (req, res) => {
+
     try {
-        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff } = req.body;
+        const { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff, subdivisionMark } = req.body;
         const oldPosition = await Position.findById(req.params.id);
 
         if (!oldPosition) {
@@ -275,13 +278,14 @@ router.put('/position/:id', async (req, res) => {
             {
                 treeNodeId: treeNodeId,
                 position: newPositionTitle,
-                vosByPos: specialtyCode || '' // Записуємо новий ВОС за посадою
+                vosByPos: specialtyCode || '', // Записуємо новий ВОС за посадою
+                subdivisionMark: subdivisionMark || ''
             }
         );
 
         const position = await Position.findByIdAndUpdate(
             req.params.id,
-            { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff },
+            { treeNodeId, shortTitle, fullTitle, rank, specialtyCode, tariff, subdivisionMark },
             { returnDocument: 'after' }
         );
 

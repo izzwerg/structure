@@ -32,6 +32,11 @@ const positionSchema = new mongoose.Schema({
         default: '',
         trim: true,
     },
+    subdivisionMark: {
+        type: String,
+        default: '',
+        trim: true,
+    },
     subdivisionId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subdivision',

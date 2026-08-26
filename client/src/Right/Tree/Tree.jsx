@@ -9,7 +9,7 @@ import ConfirmUnassign from './Modals/ConfirmUnassign';
 import AssignModal from './Modals/AssignModal';
 import { useAuth } from '../../context/AuthContext';
 
-const INITIAL_SUBDIVISION_FORM = { title: '', fullTitle: '', shortTitle: '' };
+const INITIAL_SUBDIVISION_FORM = { title: '' };
 const INITIAL_POSITION_FORM = {
     treeNodeId: '',
     shortTitle: '',
@@ -17,6 +17,7 @@ const INITIAL_POSITION_FORM = {
     rank: '',
     specialtyCode: '',
     tariff: '',
+    subdivisionMark: '',
 };
 
 export default function Tree() {
@@ -48,6 +49,7 @@ export default function Tree() {
     const [selectedPositionNodeId, setSelectedPositionNodeId] = useState(null);
     const [selectedPersonId, setSelectedPersonId] = useState('');
     const [selectedPositionVos, setSelectedPositionVos] = useState(''); // Додано для збереження vosByPos при призначенні
+    const [selectedPositionMark, setSelectedPositionMark] = useState('')
 
     // Модальне вікно перегляду картки особи
     const [viewPersonOpen, setViewPersonOpen] = useState(false);
@@ -103,7 +105,7 @@ export default function Tree() {
             const res = await fetch('/api/structure/assign-person', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ personId: personToUnassign._id, treeNodeId: '', vosByPos: '' }),
+                body: JSON.stringify({ personId: personToUnassign._id, treeNodeId: '', vosByPos: '', subdivisionMark: '' }),
             });
 
             if (!res.ok) throw new Error('Помилка зняття з посади');
@@ -178,6 +180,7 @@ export default function Tree() {
             rank: pos.rank || '',
             specialtyCode: pos.specialtyCode || '',
             tariff: pos.tariff || '',
+            subdivisionMark: pos.subdivisionMark || '',
         });
         setModalType('position');
     };
@@ -271,11 +274,12 @@ export default function Tree() {
         }
     };
 
-    const handleOpenAssign = (treeNodeId, vosByPos) => {
+    const handleOpenAssign = (treeNodeId, vosByPos, subdivisionMark) => {
         setSelectedPositionNodeId(treeNodeId);
         setSelectedPersonId('');
         setSelectedPositionVos(vosByPos);
         setAssignModalOpen(true);
+        setSelectedPositionMark(subdivisionMark)
     };
 
     const handleConfirmAssign = async (e) => {
@@ -290,6 +294,7 @@ export default function Tree() {
                     personId: selectedPersonId,
                     treeNodeId: selectedPositionNodeId,
                     vosByPos: selectedPositionVos,
+                    subdivisionMark: selectedPositionMark,
                 }),
             });
             if (!res.ok) throw new Error('Помилка призначення особи');
@@ -401,29 +406,11 @@ export default function Tree() {
                                 required
                             />
                         </div>
-                        <div className="form_group">
-                            <label>Повна назва:*</label>
-                            <input
-                                type="text"
-                                value={subForm.fullTitle}
-                                onChange={(e) => setSubForm({ ...subForm, fullTitle: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="form_group">
-                            <label>Скорочена назва:*</label>
-                            <input
-                                type="text"
-                                value={subForm.shortTitle}
-                                onChange={(e) => setSubForm({ ...subForm, shortTitle: e.target.value })}
-                                required
-                            />
-                        </div>
                         <div className="form_actions">
                             <button
                                 type="submit"
                                 className="btn_primary btn_assign"
-                                disabled={!subForm.fullTitle || !subForm.title || !subForm.shortTitle}
+                                disabled={!subForm.title}
                             >
                                 {editingId ? 'Зберегти' : 'Створити'}
                             </button>
@@ -497,11 +484,19 @@ export default function Tree() {
                                 onChange={(e) => setPosForm({ ...posForm, tariff: e.target.value })}
                             />
                         </div>
+                        <div className="form_group">
+                            <label>Мітка підрозділу*:</label>
+                            <input
+                                type="text"
+                                value={posForm.subdivisionMark}
+                                onChange={(e) => setPosForm({ ...posForm, subdivisionMark: e.target.value })}
+                            />
+                        </div>
                         <div className="form_actions">
                             <button
                                 type="submit"
                                 className="btn_primary btn_assign"
-                                disabled={!posForm.treeNodeId || !posForm.shortTitle || !posForm.fullTitle || !posForm.rank || !posForm.specialtyCode || !posForm.tariff}
+                                disabled={!posForm.treeNodeId || !posForm.shortTitle || !posForm.fullTitle || !posForm.rank || !posForm.specialtyCode || !posForm.tariff || !posForm.subdivisionMark}
                             >
                                 {editingId ? 'Зберегти' : 'Створити'}
                             </button>

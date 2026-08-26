@@ -48,6 +48,11 @@ const personSchema = new mongoose.Schema({
         default: '',
         trim: true,
     },
+    subdivisionMark: {
+        type: String,
+        default: '',
+        trim: true,
+    },
     isActive: {
         type: Boolean,
         default: true,
