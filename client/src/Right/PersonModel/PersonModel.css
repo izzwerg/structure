@@ -17,3 +17,11 @@
         height: 20px;
     }
 }
+
+.person_model_container {}
+
+.category_group_block {
+    display: flex;
+    flex-direction: column;
+
+}

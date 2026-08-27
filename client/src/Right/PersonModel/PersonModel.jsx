@@ -256,7 +256,7 @@ export default function PersonModel() {
                             if (catProps.length === 0) return null; // Перескочити порожні категорії
 
                             return (
-                                <div key={cat._id} className="category_group_block" style={{ marginBottom: '1.5rem' }}>
+                                <div key={cat._id} className="category_group_block">
                                     <h3 className="category_title" style={{ borderBottom: '2px solid #007bff', paddingBottom: '0.3rem' }}>
                                         Категорія: {cat.name}
                                     </h3>
