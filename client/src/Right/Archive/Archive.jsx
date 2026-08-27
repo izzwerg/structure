@@ -93,31 +93,24 @@ export default function Archive() {
                 {filteredPersons.length === 0 ? (
                     <p>В архіві немає жодної картки.</p>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ПІБ</th>
-                                <th>Дії</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredPersons.map((p) => (
-                                <tr key={p._id}>
-                                    <td>
-                                        <strong>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</strong>
-                                    </td>
-                                    <td>
-                                        <button onClick={() => handleOpenView(p)} className="btn_view">
-                                            Перегляд
-                                        </button>
-                                        <button onClick={() => handleRestore(p._id)} className="btn_restore">
-                                            Відновити
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className='list'>
+                        {filteredPersons.map((p) => (
+                            <div
+                                key={p._id}
+                                className='person_item'
+                            >
+                                <div className='name'>{`${p.lastName} ${p.firstName} ${p.middleName}`.trim()}</div>
+                                <div className='actions'>
+                                    <button onClick={() => handleOpenView(p)} className="btn_view">
+                                        <img src="eye.svg" alt="Перегляд" />
+                                    </button>
+                                    <button onClick={() => handleRestore(p._id)} className="btn_edit">
+                                        Відновити
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
 
