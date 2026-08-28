@@ -257,7 +257,7 @@ export default function PersonModel() {
 
                             return (
                                 <div key={cat._id} className="category_group_block">
-                                    <h3 className="category_title" style={{ borderBottom: '2px solid #007bff', paddingBottom: '0.3rem' }}>
+                                    <h3 className="category_title">
                                         Категорія: {cat.name}
                                     </h3>
                                     <table>

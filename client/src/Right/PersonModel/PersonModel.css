@@ -31,11 +31,28 @@
     .properties_list {
         height: calc(100vh - 75px);
         overflow: auto;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 16px;
+
+        .category_group_block {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 2px solid olive;
+            border-radius: 8px;
+            padding: 8px;
+            padding-top: 16px;
+
+            h3 {
+                position: absolute;
+                top: -16px;
+                left: 16px;
+                background-color: #e0e0e0;
+                padding: 0 4px;
+            }
+        }
     }
-}
-
-.category_group_block {
-    display: flex;
-    flex-direction: column;
-
 }
