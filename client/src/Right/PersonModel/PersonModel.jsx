@@ -53,7 +53,6 @@ export default function PersonModel() {
             setProperties(propsData);
             setCategories(catsData);
 
-            // Якщо є категорії, ставимо першу як дефолтну у формі
             if (catsData.length > 0 && !formData.category) {
                 setFormData((prev) => ({ ...prev, category: catsData[0].name }));
             }
@@ -302,7 +301,7 @@ export default function PersonModel() {
             <BackupModal
                 open={backupModalOpen}
                 onClose={() => setBackupModalOpen(false)}
-                onRestoreSuccess={() => fetchData()} // Перезавантажує дані на сторінці після відновлення
+                onRestoreSuccess={() => fetchData()}
             />
             {isAdmin && (
                 <UserManagementModal

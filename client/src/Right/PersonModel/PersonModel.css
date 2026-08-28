@@ -46,6 +46,7 @@
             padding: 8px;
             padding-top: 16px;
             gap: 4px;
+            width: fit-content;
 
             h3 {
                 position: absolute;
