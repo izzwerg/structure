@@ -5,6 +5,7 @@ import CatCreate from './Modals/CatCreate';
 import BackupModal from '../Modals/BackupModal/BackupModal';
 import { useAuth } from '../../context/AuthContext';
 import UserManagementModal from '../Modals/UserManagementModal';
+import { Tooltip } from '@mui/material';
 
 
 const INITIAL_FORM_STATE = {
@@ -251,17 +252,21 @@ export default function PersonModel() {
                                     </h3>
                                     {catProps.map((prop) => (
                                         <div className='category_item' key={prop._id}>
-                                            <div className='order'>
-                                                <code>
-                                                    {prop.order}
-                                                </code>
-                                            </div>
+                                            <Tooltip title={"Order"} leaveDelay={200}>
+                                                <div className='order'>
+                                                    <code>
+                                                        {prop.order}
+                                                    </code>
+                                                </div>
+                                            </Tooltip>
                                             <div className='name'>{prop.property_name}</div>
-                                            <div className='id'>
-                                                <code>
-                                                    {prop.property_id}
-                                                </code>
-                                            </div>
+                                            <Tooltip title={"ID"} leaveDelay={200}>
+                                                <div className='id'>
+                                                    <code>
+                                                        {prop.property_id}
+                                                    </code>
+                                                </div>
+                                            </Tooltip>
                                             <div className='type'>{prop.property_type}</div>
                                             <div className='edit'>
                                                 <button onClick={() => handleEdit(prop)} className="btn_edit">
