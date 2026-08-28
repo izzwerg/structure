@@ -27,12 +27,10 @@ export default function PersonModel() {
     const { isAdmin } = useAuth();
     const [userModalOpen, setUserModalOpen] = useState(false);
 
-    // Форма властивості
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
     const [open, setOpen] = useState(false);
 
-    // Форма створення категорії
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [newCategoryOrder, setNewCategoryOrder] = useState(0);
@@ -146,7 +144,6 @@ export default function PersonModel() {
         }
     };
 
-    // Створення нової категорії
     const handleCreateCategory = async (e) => {
         e.preventDefault();
         try {
@@ -167,22 +164,18 @@ export default function PersonModel() {
         }
     };
 
-    // Переміщення категорії вгору/вниз у списку локально та збереження
     const handleMoveCategory = async (index, direction) => {
         const updatedCategories = [...categories];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
         if (targetIndex < 0 || targetIndex >= updatedCategories.length) return;
 
-        // Міняємо місцями елементи
         const temp = updatedCategories[index];
         updatedCategories[index] = updatedCategories[targetIndex];
         updatedCategories[targetIndex] = temp;
 
-        // Оновлюємо локальний стан для миттєвого відгуку UI
         setCategories(updatedCategories);
 
-        // Відправляємо новий порядок на бекенд
         try {
             const res = await fetch('/api/categories/reorder', {
                 method: 'PUT',
@@ -196,13 +189,12 @@ export default function PersonModel() {
             });
 
             if (!res.ok) throw new Error('Помилка збереження порядку');
-            fetchData(); // Синхронізуємо дані
+            fetchData();
         } catch (err) {
             setError(err.message);
         }
     };
 
-    // Видалення категорії
     const handleDeleteCategory = async (id) => {
         if (!window.confirm('Ви дійсно бажаєте видалити цю категорію?')) return;
 
@@ -244,7 +236,6 @@ export default function PersonModel() {
                 )}
             </div>
 
-            {/* Список властивостей, відсортований за порядком категорій */}
             <div className="properties_list">
                 {properties.length === 0 ? (
                     <p>Властивостей поки немає.</p>
@@ -261,9 +252,17 @@ export default function PersonModel() {
                                     </h3>
                                     {catProps.map((prop) => (
                                         <div className='category_item' key={prop._id}>
-                                            <div className='order'>{prop.order}</div>
+                                            <div className='order'>
+                                                <code>
+                                                    {prop.order}
+                                                </code>
+                                            </div>
                                             <div className='name'>{prop.property_name}</div>
-                                            <div className='id'>{prop.property_id}</div>
+                                            <div className='id'>
+                                                <code>
+                                                    {prop.property_id}
+                                                </code>
+                                            </div>
                                             <div className='type'>{prop.property_type}</div>
                                             <div className='edit'>
                                                 <button onClick={() => handleEdit(prop)} className="btn_edit">
@@ -279,7 +278,6 @@ export default function PersonModel() {
                 )}
             </div>
 
-            {/* Модалка для додавання / редагування властивості */}
             <ModelEdit
                 open={open}
                 handleClose={handleClose}
@@ -289,7 +287,7 @@ export default function PersonModel() {
                 editingId={editingId}
                 categories={categories}
             />
-            {/* Модалка для категорій */}
+
             <CatCreate
                 categoryModalOpen={categoryModalOpen}
                 setCategoryModalOpen={setCategoryModalOpen}
@@ -300,7 +298,7 @@ export default function PersonModel() {
                 handleMoveCategory={handleMoveCategory}
                 handleDeleteCategory={handleDeleteCategory}
             />
-            {/* Модальне вікно бекапу */}
+
             <BackupModal
                 open={backupModalOpen}
                 onClose={() => setBackupModalOpen(false)}
