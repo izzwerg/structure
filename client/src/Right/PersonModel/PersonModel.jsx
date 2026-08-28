@@ -250,93 +250,31 @@ export default function PersonModel() {
                     <p>Властивостей поки немає.</p>
                 ) : (
                     <>
-                        {/* 1. Виводимо категорії у порядку з масиву `categories` */}
                         {categories.map((cat) => {
                             const catProps = properties.filter((p) => p.category === cat.name);
-                            if (catProps.length === 0) return null; // Перескочити порожні категорії
+                            if (catProps.length === 0) return null;
 
                             return (
                                 <div key={cat._id} className="category_group_block">
                                     <h3 className="category_title">
                                         Категорія: {cat.name}
                                     </h3>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Order</th>
-                                                <th>Назва</th>
-                                                <th>ID</th>
-                                                <th>Тип</th>
-                                                <th>Статус</th>
-                                                <th>Дії</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {catProps.map((prop) => (
-                                                <tr key={prop._id} className={!prop.is_active ? 'inactive_row' : ''}>
-                                                    <td>{prop.order}</td>
-                                                    <td><strong>{prop.property_name}</strong></td>
-                                                    <td><code>{prop.property_id}</code></td>
-                                                    <td>{prop.property_type}</td>
-                                                    <td>{prop.is_active ? 'Активна' : 'В архіві'}</td>
-                                                    <td>
-                                                        <button onClick={() => handleEdit(prop)} className="btn_edit">
-                                                            Редагувати
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                    {catProps.map((prop) => (
+                                        <div className='category_item' key={prop._id}>
+                                            <div className='order'>{prop.order}</div>
+                                            <div className='name'>{prop.property_name}</div>
+                                            <div className='id'>{prop.property_id}</div>
+                                            <div className='type'>{prop.property_type}</div>
+                                            <div className='edit'>
+                                                <button onClick={() => handleEdit(prop)} className="btn_edit">
+                                                    Редагувати
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             );
                         })}
-
-                        {/* 2. Блок для властивостей без категорії або з невідомою категорією */}
-                        {(() => {
-                            const knownCategoryNames = categories.map((c) => c.name);
-                            const uncategorizedProps = properties.filter(
-                                (p) => !p.category || !knownCategoryNames.includes(p.category)
-                            );
-
-                            if (uncategorizedProps.length === 0) return null;
-
-                            return (
-                                <div className="category_group_block" style={{ marginBottom: '1.5rem' }}>
-                                    <h3 className="category_title" style={{ borderBottom: '2px solid #6c757d', paddingBottom: '0.3rem' }}>
-                                        Без категорії / Інше
-                                    </h3>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Order</th>
-                                                <th>Назва</th>
-                                                <th>ID</th>
-                                                <th>Тип</th>
-                                                <th>Статус</th>
-                                                <th>Дії</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {uncategorizedProps.map((prop) => (
-                                                <tr key={prop._id} className={!prop.is_active ? 'inactive_row' : ''}>
-                                                    <td>{prop.order}</td>
-                                                    <td><strong>{prop.property_name}</strong></td>
-                                                    <td><code>{prop.property_id}</code></td>
-                                                    <td>{prop.property_type}</td>
-                                                    <td>{prop.is_active ? 'Активна' : 'В архіві'}</td>
-                                                    <td>
-                                                        <button onClick={() => handleEdit(prop)} className="btn_edit">
-                                                            Редагувати
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            );
-                        })()}
                     </>
                 )}
             </div>

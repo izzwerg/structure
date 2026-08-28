@@ -45,6 +45,7 @@
             border-radius: 8px;
             padding: 8px;
             padding-top: 16px;
+            gap: 4px;
 
             h3 {
                 position: absolute;
@@ -52,6 +53,14 @@
                 left: 16px;
                 background-color: #e0e0e0;
                 padding: 0 4px;
+            }
+
+            .category_item {
+                display: flex;
+                gap: 8px;
+                padding: 4px;
+                border: 1px solid black;
+                border-radius: 4px;
             }
         }
     }
