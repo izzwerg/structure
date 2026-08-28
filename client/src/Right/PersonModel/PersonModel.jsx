@@ -223,7 +223,7 @@ export default function PersonModel() {
 
             {error && <div className="error_message">{error}</div>}
 
-            <div className="model_actions_bar" style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="model_actions_bar">
                 <button onClick={handleOpen} className="btn_primary">
                     Додати властивість
                 </button>

@@ -18,7 +18,21 @@
     }
 }
 
-.person_model_container {}
+.person_model_container {
+    padding: 8px;
+
+    .model_actions_bar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 20px;
+    }
+
+    .properties_list {
+        height: calc(100vh - 75px);
+        overflow: auto;
+    }
+}
 
 .category_group_block {
     display: flex;
